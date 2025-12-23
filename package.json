@@ -1,14 +1,32 @@
 {
-  "name": "popular-parallax",
+  "name": "kossecki-metasystem",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "System rzetelnego researchu oparty na Metacybernetyce doc. Józefa Kosseckiego",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:receptor": "node --experimental-vm-modules node_modules/jest/bin/jest.js src/lib/cybernetics/receptor/extractor.test.ts",
+    "demo:receptor": "npx tsx src/lib/cybernetics/receptor/demo.ts"
   },
   "dependencies": {
-    "astro": "^5.16.6"
+    "@ai-sdk/openai": "^3.0.0",
+    "ai": "^6.0.1",
+    "astro": "^5.16.6",
+    "dotenv": "^17.2.3",
+    "openai": "^6.15.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0"
   }
 }
