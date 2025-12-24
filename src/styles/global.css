@@ -1,0 +1,126 @@
+/**
+ * @fileoverview Globalne style KMS - Estetyka terminala inżynieryjnego
+ * @cybernetic Efektor - warstwa prezentacji surowych danych cybernetycznych
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0a0e14;
+    --foreground: #e5e7eb;
+  }
+
+  * {
+    @apply border-terminal-border;
+  }
+
+  body {
+    @apply bg-terminal-bg text-terminal-text font-mono;
+  }
+
+  /* Scrollbar styling - terminal look */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-terminal-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-terminal-border rounded-sm;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-terminal-muted;
+  }
+}
+
+@layer components {
+  /* Terminal-style button */
+  .btn-terminal {
+    @apply px-4 py-2 bg-terminal-surface border border-terminal-border text-terminal-text;
+    @apply hover:border-terminal-accent hover:text-terminal-accent transition-colors;
+    @apply font-mono text-sm uppercase tracking-wider;
+  }
+
+  .btn-terminal:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Terminal-style input */
+  .input-terminal {
+    @apply w-full px-4 py-2 bg-terminal-surface border border-terminal-border text-terminal-text;
+    @apply focus:outline-none focus:border-terminal-accent;
+    @apply font-mono text-sm;
+  }
+
+  /* Terminal-style card */
+  .card-terminal {
+    @apply bg-terminal-surface border border-terminal-border;
+    @apply shadow-lg shadow-black/50;
+  }
+
+  /* Cyber table */
+  .table-cyber {
+    @apply w-full border-collapse;
+  }
+
+  .table-cyber th {
+    @apply bg-terminal-surface border-b-2 border-terminal-accent;
+    @apply px-4 py-3 text-left text-xs uppercase tracking-wider text-terminal-accent;
+  }
+
+  .table-cyber td {
+    @apply border-b border-terminal-border px-4 py-3 text-sm;
+  }
+
+  .table-cyber tr:hover {
+    @apply bg-terminal-surface/50;
+  }
+
+  /* Status badges */
+  .badge-certainty-high {
+    @apply inline-block px-2 py-1 text-xs font-bold bg-feedback-positive/20 text-feedback-positive border border-feedback-positive/50;
+  }
+
+  .badge-certainty-medium {
+    @apply inline-block px-2 py-1 text-xs font-bold bg-feedback-neutral/20 text-feedback-neutral border border-feedback-neutral/50;
+  }
+
+  .badge-certainty-low {
+    @apply inline-block px-2 py-1 text-xs font-bold bg-feedback-negative/20 text-feedback-negative border border-feedback-negative/50;
+  }
+
+  /* System type indicators */
+  .indicator-cognitive {
+    @apply text-control-cognitive border-control-cognitive;
+  }
+
+  .indicator-ideological {
+    @apply text-control-ideological border-control-ideological animate-pulse;
+  }
+
+  .indicator-ethical {
+    @apply text-control-ethical border-control-ethical;
+  }
+
+  .indicator-economic {
+    @apply text-control-economic border-control-economic;
+  }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .border-glow {
+    box-shadow: 0 0 10px currentColor;
+  }
+}
+

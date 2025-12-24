@@ -18,6 +18,11 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 # MODEL AI (OPCJONALNE)
 # Domyślny: anthropic/claude-3.5-sonnet
 AI_MODEL=anthropic/claude-3.5-sonnet
+
+# SUPABASE (WYMAGANE dla Korelatora)
+# Pobierz z: https://supabase.com/dashboard → Project Settings → API
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_anon_or_service_role_key
 ```
 
 ## 3. Szybkie Demo (Bez Instalacji Testów)

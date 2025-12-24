@@ -53,9 +53,14 @@ npm test
 # Tylko testy Receptora
 npm run test:receptor
 
+# Test połączenia z Supabase (Korelator)
+npm run test:supabase
+
 # Tryb watch (automatyczne ponowne uruchamianie)
 npm run test:watch
 ```
+
+**Uwaga:** Test Supabase wymaga wdrożenia schematu bazy danych. Zobacz: [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
 
 ---
 

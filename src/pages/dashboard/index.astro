@@ -1,0 +1,299 @@
+---
+/**
+ * @fileoverview Dashboard Efektora - Panel Analityczny KMS
+ * @cybernetic Efektor - organ wyjściowy systemu
+ * 
+ * Zgodnie z teorią Kosseckiego:
+ * - Prezentacja obiektów i relacji w sposób rzetelny
+ * - Ostrzeżenia o szumie ideologicznym
+ * - Metryki rzetelności (certainty_score)
+ * - Potencjał sterowniczy (liczba relacji wychodzących)
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase/client';
+import type { 
+  DashboardObject, 
+  SystemStats 
+} from '../../lib/cybernetics/efektor/types';
+import type { 
+  CyberneticObject, 
+  Correlation 
+} from '../../lib/supabase/types';
+
+// ============================================================================
+// POBIERANIE DANYCH Z SUPABASE (Server-Side)
+// ============================================================================
+
+let objects: DashboardObject[] = [];
+let stats: SystemStats = {
+  total_objects: 0,
+  total_relations: 0,
+  average_certainty: 0,
+  system_class_distribution: {
+    autonomous_system: 0,
+    heteronomous_system: 0,
+    environment: 0,
+    tool: 0,
+  },
+  control_type_distribution: {
+    cognitive: 0,
+    ideological: 0,
+    ethical: 0,
+    economic: 0,
+  },
+  high_noise_relations: 0,
+  ideological_sources: 0,
+};
+
+try {
+  // Pobierz wszystkie obiekty
+  const { data: rawObjects, error: objectsError } = await supabase
+    .from('cybernetic_objects')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (objectsError) {
+    console.error('[DASHBOARD] Błąd pobierania obiektów:', objectsError);
+  }
+
+  // Pobierz wszystkie relacje
+  const { data: correlations, error: correlationsError } = await supabase
+    .from('correlations')
+    .select('*');
+
+  if (correlationsError) {
+    console.error('[DASHBOARD] Błąd pobierania relacji:', correlationsError);
+  }
+
+  // Oblicz metryki dla każdego obiektu
+  if (rawObjects && correlations) {
+    const objectMetrics = new Map<string, {
+      steering_potential: number;
+      dependency_count: number;
+      total_impact: number;
+      total_certainty: number;
+      relation_count: number;
+    }>();
+
+    rawObjects.forEach(obj => {
+      objectMetrics.set(obj.id, {
+        steering_potential: 0,
+        dependency_count: 0,
+        total_impact: 0,
+        total_certainty: 0,
+        relation_count: 0,
+      });
+    });
+
+    // Oblicz metryki z relacji
+    let totalCertainty = 0;
+    let highNoiseCount = 0;
+    let ideologicalCount = 0;
+
+    correlations.forEach(rel => {
+      const sourceMetrics = objectMetrics.get(rel.source_id);
+      const targetMetrics = objectMetrics.get(rel.target_id);
+
+      if (sourceMetrics) {
+        sourceMetrics.steering_potential += 1;
+        sourceMetrics.total_impact += rel.impact_factor;
+        sourceMetrics.total_certainty += rel.certainty_score;
+        sourceMetrics.relation_count += 1;
+      }
+
+      if (targetMetrics) {
+        targetMetrics.dependency_count += 1;
+        targetMetrics.total_certainty += rel.certainty_score;
+        targetMetrics.relation_count += 1;
+      }
+
+      totalCertainty += rel.certainty_score;
+      
+      if (rel.certainty_score < 0.3) {
+        highNoiseCount += 1;
+      }
+    });
+
+    // Stwórz rozszerzone obiekty
+    objects = rawObjects.map(obj => {
+      const metrics = objectMetrics.get(obj.id)!;
+      const avgCertainty = metrics.relation_count > 0 
+        ? metrics.total_certainty / metrics.relation_count 
+        : 0;
+
+      // Zlicz typy systemów
+      stats.system_class_distribution[obj.system_class] += 1;
+      stats.control_type_distribution[obj.control_system_type] += 1;
+
+      if (obj.control_system_type === 'ideological') {
+        ideologicalCount += 1;
+      }
+
+      return {
+        ...obj,
+        steering_potential: metrics.steering_potential,
+        dependency_count: metrics.dependency_count,
+        total_impact: metrics.total_impact,
+        average_certainty: avgCertainty,
+      } as DashboardObject;
+    });
+
+    // Oblicz statystyki systemowe
+    stats.total_objects = rawObjects.length;
+    stats.total_relations = correlations.length;
+    stats.average_certainty = correlations.length > 0 
+      ? totalCertainty / correlations.length 
+      : 0;
+    stats.high_noise_relations = highNoiseCount;
+    stats.ideological_sources = ideologicalCount;
+  }
+} catch (error) {
+  console.error('[DASHBOARD] Krytyczny błąd:', error);
+}
+---
+
+<Layout 
+  title="Dashboard - KOSSECKI METASYSTEM"
+  description="Panel analityczny systemu rzetelnego researchu"
+>
+  <main class="min-h-screen p-6 space-y-6">
+    <!-- Nagłówek -->
+    <header class="card-terminal p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-terminal-accent uppercase tracking-wider mb-2">
+            KOSSECKI METASYSTEM
+          </h1>
+          <p class="text-terminal-muted">
+            Panel Analityczny - Efektor v0.1.0
+          </p>
+        </div>
+        <div class="text-right text-xs text-terminal-muted">
+          <div>System rzetelnego researchu</div>
+          <div>Oparty na Metacybernetyce J. Kosseckiego</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Ostrzeżenie systemowe (jeśli wykryto ideologię) -->
+    {stats.ideological_sources > 0 && (
+      <div class="card-terminal p-4 border-2 border-control-ideological bg-control-ideological/10 animate-pulse">
+        <div class="flex items-start gap-3">
+          <span class="text-2xl">⚠</span>
+          <div class="flex-1">
+            <h3 class="font-bold text-control-ideological mb-1 uppercase tracking-wider">
+              Ostrzeżenie: Wykryto źródła ideologiczne
+            </h3>
+            <p class="text-sm text-terminal-text">
+              System zidentyfikował {stats.ideological_sources} obiekt(ów) z dominującym systemem ideologicznym. 
+              Zgodnie z rygorem Kosseckiego, takie źródła wymagają szczególnej weryfikacji rzetelności.
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Statystyki systemu -->
+    <section>
+      <div id="stats-panel" data-stats={JSON.stringify(stats)}></div>
+    </section>
+
+    <!-- Formularz Receptor Input -->
+    <section>
+      <div id="receptor-form"></div>
+    </section>
+
+    <!-- Tabela obiektów -->
+    <section>
+      <h2 class="text-xl font-bold text-terminal-accent uppercase tracking-wider mb-4">
+        [DATABASE] Obiekty Cybernetyczne
+      </h2>
+      <div id="objects-table" data-objects={JSON.stringify(objects)}></div>
+    </section>
+
+    <!-- Graf relacji -->
+    <section>
+      <div id="relation-graph" class="w-full"></div>
+    </section>
+
+    <!-- Footer z metrykami -->
+    <footer class="card-terminal p-4 text-center text-xs text-terminal-muted">
+      <p>
+        © 2024 KOSSECKI METASYSTEM | 
+        Receptor → Homeostat → Korelator → Efektor | 
+        Powered by Astro 5 + React 19 + Supabase
+      </p>
+      <p class="mt-2">
+        Teoria: doc. Józef Kossecki "Metacybernetyka - Cybernetyka Drugiego Rzędu"
+      </p>
+    </footer>
+  </main>
+</Layout>
+
+<script>
+  /**
+   * @cybernetic Client-side hydration dla komponentów React
+   * Astro Server Islands - komponenty renderowane tylko po stronie klienta
+   */
+  import { createRoot } from 'react-dom/client';
+  import { createElement } from 'react';
+  import { StatisticsPanel } from '../../components/cybernetics/StatisticsPanel';
+  import { ReceptorInputForm } from '../../components/cybernetics/ReceptorInputForm';
+  import { ObjectsTable } from '../../components/cybernetics/ObjectsTable';
+  import { RelationGraph } from '../../components/cybernetics/RelationGraph';
+
+  // Hydrate Statistics Panel
+  const statsPanel = document.getElementById('stats-panel');
+  if (statsPanel) {
+    const stats = JSON.parse(statsPanel.dataset.stats || '{}');
+    const root = createRoot(statsPanel);
+    root.render(createElement(StatisticsPanel, { stats }));
+  }
+
+  // Hydrate Receptor Form
+  const receptorForm = document.getElementById('receptor-form');
+  if (receptorForm) {
+    const root = createRoot(receptorForm);
+    root.render(
+      createElement(ReceptorInputForm, {
+        onProcessComplete: () => {
+          // Odśwież stronę po przetworzeniu sygnału
+          window.location.reload();
+        },
+      })
+    );
+  }
+
+  // Hydrate Objects Table
+  const objectsTable = document.getElementById('objects-table');
+  if (objectsTable) {
+    const objects = JSON.parse(objectsTable.dataset.objects || '[]');
+    const root = createRoot(objectsTable);
+    root.render(
+      createElement(ObjectsTable, {
+        objects,
+        onObjectClick: (objectId: string) => {
+          console.log('[DASHBOARD] Clicked object:', objectId);
+          // TODO: Otwórz modal z szczegółami obiektu
+        },
+      })
+    );
+  }
+
+  // Hydrate Relation Graph
+  const relationGraph = document.getElementById('relation-graph');
+  if (relationGraph) {
+    const root = createRoot(relationGraph);
+    // Dopasuj szerokość do kontenera
+    const width = relationGraph.clientWidth || 1200;
+    root.render(
+      createElement(RelationGraph, {
+        width,
+        height: 600,
+        className: 'w-full',
+      })
+    );
+  }
+</script>
+

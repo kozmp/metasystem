@@ -117,7 +117,7 @@ export const ExtractionMetadataSchema = z.object({
   extracted_at: z.date().optional(),
   
   /** Ostrzeżenie dla Efektora (jeśli is_ambiguous = true) */
-  warning_message: z.string().optional(),
+  warning_message: z.string().optional().nullable(),
 });
 
 export type ExtractionMetadata = z.infer<typeof ExtractionMetadataSchema>;

@@ -6,6 +6,13 @@
  * Nie pozwalamy na luźne streszczenie - wymuszamy ekstrakcję relacji sterowniczych.
  */
 
+// Załaduj zmienne środowiskowe z .env (dla Node.js)
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Załaduj .env z głównego katalogu projektu
+config({ path: resolve(process.cwd(), '.env') });
+
 import OpenAI from 'openai';
 import {
   CyberneticInputSchema,
@@ -23,7 +30,15 @@ import {
  * OpenRouter jest kompatybilny z API OpenAI
  */
 function createAIClient(): OpenAI {
-  const apiKey = import.meta.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
+  // W Node.js używamy process.env, w Astro używamy import.meta.env
+  const apiKey = 
+    typeof process !== 'undefined' && process.env.OPENROUTER_API_KEY
+      ? process.env.OPENROUTER_API_KEY
+      : (typeof import.meta !== 'undefined' && import.meta.env?.OPENROUTER_API_KEY) || undefined;
+  
+  console.log(`[RECEPTOR] Debug - API Key obecny: ${apiKey ? 'TAK' : 'NIE'}`);
+  console.log(`[RECEPTOR] Debug - API Key długość: ${apiKey?.length || 0}`);
+  console.log(`[RECEPTOR] Debug - API Key prefix: ${apiKey?.substring(0, 10) || 'brak'}`);
   
   if (!apiKey) {
     throw new Error(
@@ -198,7 +213,12 @@ export class ReceptorExtractorService {
   
   constructor() {
     this.client = createAIClient();
-    const configuredModel = import.meta.env.AI_MODEL || process.env.AI_MODEL;
+    
+    // W Node.js używamy process.env, w Astro używamy import.meta.env
+    const configuredModel = 
+      typeof process !== 'undefined' && process.env.AI_MODEL
+        ? process.env.AI_MODEL
+        : (typeof import.meta !== 'undefined' && import.meta.env?.AI_MODEL) || undefined;
     
     if (configuredModel) {
       // Użytkownik wybrał konkretny model

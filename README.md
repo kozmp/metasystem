@@ -155,8 +155,9 @@ KOSSECKI METASYSTEM (KMS) - System zbudowany zgodnie z rygorem naukowym doc. Jó
 - ✅ Testy jednostkowe (Cognitive Clarity + Ideological Noise)
 
 ### KORELATOR (Organ Logiki) - 🚧 W TRAKCIE
-- ⏳ Integracja z PostgreSQL (Supabase)
-- ⏳ Graf wiedzy (Recursive CTE)
+- ✅ Integracja z PostgreSQL (Supabase) - schemat gotowy
+- ✅ Klient Supabase + typy TypeScript
+- ⏳ Graf wiedzy (Recursive CTE) - widok gotowy, brak integracji
 - ⏳ Hybrydowe wyszukiwanie
 
 ### HOMEOSTAT (Organ Weryfikacji) - 📋 ZAPLANOWANY
