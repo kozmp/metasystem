@@ -60,6 +60,10 @@ export interface SystemStats {
   // Ostrzeżenia
   high_noise_relations: number;    // Liczba relacji z certainty_score < 0.3
   ideological_sources: number;     // Liczba źródeł ideologicznych
+  
+  // Homeostat - wykryte sprzeczności
+  contradiction_alerts: number;    // Liczba aktywnych alertów sprzeczności
+  max_contradiction_severity: number; // Najwyższy poziom severity (0-1)
 }
 
 /**

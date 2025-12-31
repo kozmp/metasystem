@@ -9,6 +9,7 @@
 
 import { supabase } from '../../supabase/client';
 import { getReceptorExtractor } from '../receptor/extractor';
+import { detectContradictions } from '../homeostat/contradiction-engine';
 import type { CyberneticInput, SemanticNoiseError } from '../receptor/validator';
 import type { 
   CyberneticObject, 
@@ -90,16 +91,26 @@ function mapRelationType(
  * Przepływ informacji (zgodnie z architekturą KMS):
  * 1. RECEPTOR: Transformacja tekstu → obiekty + relacje
  * 2. KORELATOR: Zapis w pamięci trwałej (Supabase)
- *    a) raw_signals - surowy tekst
+ *    a) raw_signals - surowy tekst + metadane źródła
  *    b) cybernetic_objects - wyekstrahowane obiekty
  *    c) correlations - relacje sterownicze
  * 3. HOMEOSTAT: Weryfikacja rzetelności (TODO)
  * 4. EFEKTOR: Prezentacja wyników (TODO)
  * 
  * @param text - Surowy tekst do analizy
+ * @param sourceMetadata - Opcjonalne metadane źródła (URL, tytuł, etc.)
  * @returns Podsumowanie zapisanych danych lub błąd
  */
-export async function processAndStoreSignal(text: string): Promise<{
+export async function processAndStoreSignal(
+  text: string,
+  sourceMetadata?: {
+    source_url?: string;
+    source_title?: string;
+    author?: string;
+    published_date?: string;
+    description?: string;
+  }
+): Promise<{
   success: boolean;
   raw_signal_id?: string;
   objects_created: number;
@@ -170,6 +181,13 @@ export async function processAndStoreSignal(text: string): Promise<{
         content: text,
         processed: true,
         noise_level: noiseLevel,
+        source_url: sourceMetadata?.source_url || null,
+        source_title: sourceMetadata?.source_title || null,
+        source_metadata: sourceMetadata ? {
+          author: sourceMetadata.author,
+          published_date: sourceMetadata.published_date,
+          description: sourceMetadata.description,
+        } : null,
       })
       .select()
       .single();
@@ -239,6 +257,7 @@ export async function processAndStoreSignal(text: string): Promise<{
     
     console.log('[KORELATOR] Zapisuję relacje do correlations...');
     let relationsCreated = 0;
+    const newRelations: Correlation[] = []; // Zbieramy nowe relacje dla Homeostatu
     
     for (const rel of input.relations) {
       const sourceDbId = objectIdMap.get(rel.subject_id);
@@ -257,6 +276,7 @@ export async function processAndStoreSignal(text: string): Promise<{
           relation_type: mapRelationType(rel.process_type, rel.feedback_type),
           certainty_score: certaintyScore, // Waga rzetelności z poziomu szumu
           impact_factor: rel.influence_strength,
+          source_name: input.metadata.source_name || 'unknown', // Śledzenie źródła
           evidence_data: {
             description: rel.description,
             evidence: rel.evidence || [],
@@ -273,11 +293,34 @@ export async function processAndStoreSignal(text: string): Promise<{
         continue;
       }
       
+      newRelations.push(newRelation); // Dodaj do listy nowych relacji
       relationsCreated++;
       console.log(`[KORELATOR]   ✓ Utworzono relację ${rel.subject_id} → ${rel.object_id} (${newRelation.id})`);
     }
     
     console.log(`[KORELATOR] ✓ Zapisano ${relationsCreated} relacji`);
+    
+    // ========================================================================
+    // KROK 2d: HOMEOSTAT - Detekcja Sprzeczności (Weryfikacja Rzetelności Wstecznej)
+    // ========================================================================
+    
+    if (newRelations.length > 0) {
+      console.log('[KORELATOR] Uruchamiam Homeostat - detekcja sprzeczności...');
+      try {
+        const contradictionReport = await detectContradictions(newRelations);
+        
+        if (contradictionReport.detected) {
+          console.log(`[KORELATOR] ⚠ HOMEOSTAT wykrył ${contradictionReport.contradictions.length} sprzeczności!`);
+          console.log(`[KORELATOR] Max severity: ${contradictionReport.summary.max_severity.toFixed(2)}`);
+          console.log(`[KORELATOR] Zalecana akcja: ${contradictionReport.summary.recommended_action}`);
+        } else {
+          console.log('[KORELATOR] ✓ HOMEOSTAT: Brak sprzeczności');
+        }
+      } catch (homeostatError) {
+        console.error('[KORELATOR] Błąd Homeostatu:', homeostatError);
+        // Nie przerywamy procesu - to tylko weryfikacja
+      }
+    }
     
     // ========================================================================
     // PODSUMOWANIE

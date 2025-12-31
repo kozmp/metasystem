@@ -44,6 +44,8 @@ let stats: SystemStats = {
   },
   high_noise_relations: 0,
   ideological_sources: 0,
+  contradiction_alerts: 0,
+  max_contradiction_severity: 0,
 };
 
 try {
@@ -147,6 +149,23 @@ try {
       : 0;
     stats.high_noise_relations = highNoiseCount;
     stats.ideological_sources = ideologicalCount;
+
+    // Pobierz alerty sprzeczności z Homeostatu
+    const { data: alerts, error: alertsError } = await supabase
+      .from('system_alerts')
+      .select('severity')
+      .eq('status', 'active')
+      .eq('alert_type', 'contradiction');
+
+    if (!alertsError && alerts) {
+      stats.contradiction_alerts = alerts.length;
+      stats.max_contradiction_severity = alerts.length > 0 
+        ? Math.max(...alerts.map(a => a.severity))
+        : 0;
+    } else {
+      stats.contradiction_alerts = 0;
+      stats.max_contradiction_severity = 0;
+    }
   }
 } catch (error) {
   console.error('[DASHBOARD] Krytyczny błąd:', error);
@@ -173,6 +192,20 @@ try {
           <div>System rzetelnego researchu</div>
           <div>Oparty na Metacybernetyce J. Kosseckiego</div>
         </div>
+      </div>
+      
+      <!-- Link do Centrum Zwiadu -->
+      <div class="mt-4 pt-4 border-t border-terminal-border">
+        <a 
+          href="/dashboard/recon" 
+          class="inline-flex items-center gap-2 px-4 py-2 bg-control-cognitive text-white font-bold uppercase tracking-wider hover:bg-control-cognitive/80 transition-colors"
+        >
+          <span>🔍</span>
+          <span>[CENTRUM ZWIADU - RECEPTOR 2.0]</span>
+        </a>
+        <p class="text-xs text-terminal-muted mt-2">
+          Autonomiczny zwiadowca informacyjny - Scraping WWW + RSS Monitoring
+        </p>
       </div>
     </header>
 

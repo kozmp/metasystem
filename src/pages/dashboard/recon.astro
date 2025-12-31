@@ -1,0 +1,138 @@
+---
+/**
+ * @fileoverview Dashboard - Centrum Zwiadu (Reconnaissance Center)
+ * @cybernetic Efektor dla Receptora 2.0 - Autonomiczny Zwiadowca
+ * 
+ * Zgodnie z teorią Kosseckiego:
+ * - Receptor aktywny (scraping) i pasywny (RSS)
+ * - Metryki rzetelności w czasie rzeczywistym
+ * - Pełna kontrola nad procesem zbierania danych
+ * - Tracking pochodzenia każdego sygnału
+ */
+
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Centrum Zwiadu - KOSSECKI METASYSTEM"
+  description="Autonomiczny zwiadowca informacyjny - Receptor 2.0"
+>
+  <main class="min-h-screen p-6">
+    <!-- Kontener dla React Component -->
+    <div id="recon-panel"></div>
+    
+    <!-- Instrukcja użytkowania -->
+    <section class="card-terminal p-6 mt-6">
+      <h2 class="text-xl font-bold text-terminal-accent uppercase tracking-wider mb-4">
+        [INSTRUKCJA] Jak korzystać z Centrum Zwiadu
+      </h2>
+      
+      <div class="space-y-4 text-sm text-terminal-text">
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">1. Dodawanie źródeł</h3>
+          <p class="text-terminal-muted">
+            Użyj formularza "Dodaj Nowe Źródło", aby dodać URL strony WWW lub kanał RSS.
+            System automatycznie pobierze treść, przetworzy przez Receptor i zapisze w bazie.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">2. Skanowanie pojedynczego URL</h3>
+          <p class="text-terminal-muted">
+            Kliknij przycisk [SKANUJ] przy wybranym źródle. System:
+          </p>
+          <ul class="list-disc list-inside ml-4 mt-2 text-terminal-muted space-y-1">
+            <li>Pobierze treść strony (HTML)</li>
+            <li>Oczyści z tagów HTML i reklam</li>
+            <li>Przetworzy przez AI (Receptor → Ekstrakcja obiektów i relacji)</li>
+            <li>Zapisze w bazie (Korelator)</li>
+            <li>Przeprowadzi weryfikację rzetelności (Homeostat)</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">3. Monitoring RSS</h3>
+          <p class="text-terminal-muted">
+            Kliknij [SPRAWDŹ RSS FEEDS], aby sprawdzić wszystkie kanały RSS.
+            System pokaże listę nowych wpisów bez przetwarzania (tryb podglądu).
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">4. Metryki Rzetelności</h3>
+          <p class="text-terminal-muted">
+            Każde źródło ma obliczane automatycznie:
+          </p>
+          <ul class="list-disc list-inside ml-4 mt-2 text-terminal-muted space-y-1">
+            <li><strong>Certainty Score</strong> - waga rzetelności (1.0 - noise_level)</li>
+            <li><strong>Noise Level</strong> - poziom szumu semantycznego (0.0 = czyste, 1.0 = bełkot)</li>
+            <li><strong>Sukces/Porażka</strong> - historia skanów</li>
+          </ul>
+        </div>
+        
+        <div class="card-terminal p-4 border-2 border-control-ideological bg-control-ideological/10">
+          <h3 class="font-bold text-control-ideological mb-2 uppercase">
+            ⚠ Ostrzeżenie: Anti-Ideology Tuning
+          </h3>
+          <p class="text-sm text-terminal-muted">
+            Zgodnie z rygorem Kosseckiego, system automatycznie wykrywa przymiotniki wartościujące
+            i terminologię ideologiczną. Takie źródła otrzymują flagę WARNING i wymagają weryfikacji użytkownika.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">5. Rygor Metacybernetyczny</h3>
+          <p class="text-terminal-muted">
+            Każdy obiekt zapisany w systemie zawiera:
+          </p>
+          <ul class="list-disc list-inside ml-4 mt-2 text-terminal-muted space-y-1">
+            <li><strong>Metadane pochodzenia</strong> - URL źródłowy, autor, data publikacji</li>
+            <li><strong>Klasyfikację systemu</strong> - Cognitive/Ideological/Ethical/Economic</li>
+            <li><strong>Relacje sterownicze</strong> - KTO steruje KIM i JAKIM KOSZTEM</li>
+            <li><strong>Sprzężenie zwrotne</strong> - Positive/Negative/Neutral</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer z nawigacją -->
+    <footer class="card-terminal p-4 mt-6 text-center">
+      <div class="flex justify-center gap-4">
+        <a 
+          href="/dashboard" 
+          class="px-4 py-2 bg-terminal-accent text-terminal-bg font-bold uppercase tracking-wider hover:bg-terminal-accent/80"
+        >
+          [POWRÓT DO DASHBOARD]
+        </a>
+        <a 
+          href="/" 
+          class="px-4 py-2 bg-terminal-border text-terminal-text font-bold uppercase tracking-wider hover:bg-terminal-border/80"
+        >
+          [STRONA GŁÓWNA]
+        </a>
+      </div>
+      
+      <p class="mt-4 text-xs text-terminal-muted">
+        Receptor 2.0 - Autonomiczny Zwiadowca | 
+        Teoria: doc. Józef Kossecki "Metacybernetyka"
+      </p>
+    </footer>
+  </main>
+</Layout>
+
+<script>
+  /**
+   * @cybernetic Client-side hydration dla ReconPanel
+   */
+  import { createRoot } from 'react-dom/client';
+  import { createElement } from 'react';
+  import { ReconPanel } from '../../components/cybernetics/ReconPanel';
+
+  // Hydrate ReconPanel
+  const reconPanel = document.getElementById('recon-panel');
+  if (reconPanel) {
+    const root = createRoot(reconPanel);
+    root.render(createElement(ReconPanel));
+  }
+</script>
+

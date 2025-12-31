@@ -3,7 +3,7 @@
  * @cybernetic Efektor - metryki rzetelności i stanu systemu
  */
 
-import { Activity, AlertTriangle, Database, GitBranch } from 'lucide-react';
+import { Activity, AlertTriangle, Database, GitBranch, Shield } from 'lucide-react';
 import type { SystemStats } from '../../lib/cybernetics/efektor/types';
 
 interface StatisticsPanelProps {
@@ -33,8 +33,16 @@ export function StatisticsPanel({ stats }: StatisticsPanelProps) {
       ? 'text-feedback-neutral' 
       : 'text-feedback-negative';
 
+  const hasContradictions = stats.contradiction_alerts > 0;
+  const contradictionSeverityColor = 
+    stats.max_contradiction_severity >= 0.8 
+      ? 'text-feedback-negative' 
+      : stats.max_contradiction_severity >= 0.5 
+      ? 'text-feedback-warning' 
+      : 'text-feedback-neutral';
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {/* Obiekty w systemie */}
       <div className="card-terminal p-4">
         <div className="flex items-start justify-between mb-3">
@@ -140,8 +148,58 @@ export function StatisticsPanel({ stats }: StatisticsPanelProps) {
         </div>
       </div>
 
+      {/* HOMEOSTAT - Alert wektora sterowniczego */}
+      <div className={`card-terminal p-4 ${
+        hasContradictions 
+          ? 'border-2 border-feedback-negative animate-pulse' 
+          : ''
+      }`}>
+        <div className="flex items-start justify-between mb-3">
+          <div className={`p-2 border ${
+            hasContradictions
+              ? 'bg-feedback-negative/10 border-feedback-negative/30'
+              : 'bg-feedback-positive/10 border-feedback-positive/30'
+          }`}>
+            <Shield className={`w-5 h-5 ${
+              hasContradictions
+                ? 'text-feedback-negative'
+                : 'text-feedback-positive'
+            }`} />
+          </div>
+          <span className={`text-2xl font-bold ${
+            hasContradictions
+              ? contradictionSeverityColor
+              : 'text-feedback-positive'
+          }`}>
+            {stats.contradiction_alerts}
+          </span>
+        </div>
+        <h3 className="text-xs uppercase tracking-wider text-terminal-muted mb-2">
+          {hasContradictions ? '⚠ Alert Wektora Sterowniczego' : 'Homeostat - Spójność'}
+        </h3>
+        <div className="space-y-1 text-xs">
+          {hasContradictions ? (
+            <>
+              <div className="text-feedback-negative font-bold">
+                Wykryto {stats.contradiction_alerts} sprzeczności!
+              </div>
+              <div className="text-terminal-muted">
+                Severity: {(stats.max_contradiction_severity * 100).toFixed(0)}%
+              </div>
+              <div className="text-terminal-muted text-[10px] mt-2">
+                Weryfikacja Rzetelności Wstecznej wykryła konflikt w pamięci historycznej systemu
+              </div>
+            </>
+          ) : (
+            <div className="text-feedback-positive">
+              ✓ Brak sprzeczności w pamięci systemu
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Rozkład typów sterowania */}
-      <div className="card-terminal p-4 md:col-span-2 lg:col-span-4">
+      <div className="card-terminal p-4 md:col-span-2 lg:col-span-5">
         <h3 className="text-xs uppercase tracking-wider text-terminal-muted mb-3">
           Rozkład systemów sterowania:
         </h3>

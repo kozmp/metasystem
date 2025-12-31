@@ -118,6 +118,9 @@ export const ExtractionMetadataSchema = z.object({
   
   /** Ostrzeżenie dla Efektora (jeśli is_ambiguous = true) */
   warning_message: z.string().optional().nullable(),
+  
+  /** Nazwa źródła (dla detekcji sprzeczności przez Homeostat) */
+  source_name: z.string().optional().default('unknown'),
 });
 
 export type ExtractionMetadata = z.infer<typeof ExtractionMetadataSchema>;

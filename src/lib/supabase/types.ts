@@ -75,6 +75,9 @@ export interface Correlation {
   certainty_score: number;      // 0-1, waga rzetelności
   impact_factor: number;         // Siła wpływu
   evidence_data?: Record<string, unknown>;
+  source_name?: string;          // Nazwa źródła (dla detekcji sprzeczności)
+  superseded_at?: string;        // Kiedy relacja została wycofana
+  superseded_by?: string;        // ID nowej relacji która tę zastąpiła
   created_at: string;
 }
 
@@ -100,6 +103,26 @@ export interface RawSignal {
   content: string;
   processed: boolean;
   noise_level?: number;          // semanticNoiseLevel z Receptora
+  created_at: string;
+}
+
+/**
+ * @cybernetic Tabela: system_alerts
+ * Alerty systemowe (wykryte sprzeczności, zmiany narracji)
+ */
+export interface SystemAlert {
+  id: string;
+  alert_type: 'contradiction' | 'narrative_shift' | 'low_certainty' | 'ideological_flag';
+  severity: number;              // 0-1, gdzie 1 = krytyczne
+  title: string;
+  description: string;
+  conflicting_relation_ids: string[];
+  affected_object_ids: string[];
+  source_name?: string;
+  metadata: Record<string, unknown>;
+  status: 'active' | 'resolved' | 'dismissed';
+  resolved_at?: string;
+  resolved_by?: string;
   created_at: string;
 }
 
@@ -133,6 +156,11 @@ export interface Database {
         Row: RawSignal;
         Insert: Omit<RawSignal, 'id' | 'created_at'>;
         Update: Partial<Omit<RawSignal, 'id' | 'created_at'>>;
+      };
+      system_alerts: {
+        Row: SystemAlert;
+        Insert: Omit<SystemAlert, 'id' | 'created_at'>;
+        Update: Partial<Omit<SystemAlert, 'id' | 'created_at'>>;
       };
     };
     Views: {
