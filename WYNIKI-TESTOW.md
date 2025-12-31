@@ -130,9 +130,9 @@ schema-receptor-sources.sql
 ### Krok 2: Uruchom test ponownie
 
 ```bash
-$env:OPENROUTER_API_KEY="***REMOVED***"
+$env:OPENROUTER_API_KEY="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"
 $env:SUPABASE_URL="https://qqxgegdcygqrptuviwmo.supabase.co"
-$env:SUPABASE_KEY="***REMOVED***"
+$env:SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeGdlZ2RjeWdxcnB0dXZpd21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MjIzMjgsImV4cCI6MjA4MjA5ODMyOH0.AnRsFOgb-X9GCR9Dt3bEMNV_H_cxt_kUiUmGDFc2F4o"
 npx tsx test-scraper.ts
 ```
 
