@@ -1,0 +1,153 @@
+---
+/**
+ * @fileoverview Dashboard - Symulator Sterowania
+ * @cybernetic Moduł Decyzyjny - Analiza wpływu i rekomendacje
+ * 
+ * Zgodnie z teorią Kosseckiego:
+ * System analizuje graf relacji i doradzai jak najlepiej wpłynąć na wybrany obiekt
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase/client';
+
+// Pobierz listę obiektów do wyboru
+let objects: Array<{ id: string; name: string }> = [];
+
+try {
+  const { data } = await supabase
+    .from('cybernetic_objects')
+    .select('id, name')
+    .order('name');
+  
+  objects = data || [];
+} catch (error) {
+  console.error('[DECISIONS] Błąd pobierania obiektów:', error);
+}
+---
+
+<Layout 
+  title="Symulator Sterowania - KOSSECKI METASYSTEM"
+  description="Moduł Decyzyjny - Analiza wpływu i rekomendacje sterownicze"
+>
+  <main class="min-h-screen p-6">
+    <!-- Kontener dla React Component -->
+    <div id="decision-simulator" data-objects={JSON.stringify(objects)}></div>
+    
+    <!-- Instrukcja użytkowania -->
+    <section class="card-terminal p-6 mt-6">
+      <h2 class="text-xl font-bold text-terminal-accent uppercase tracking-wider mb-4">
+        [INSTRUKCJA] Jak korzystać z Symulatora Sterowania
+      </h2>
+      
+      <div class="space-y-4 text-sm text-terminal-text">
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">1. Wybierz obiekt docelowy</h3>
+          <p class="text-terminal-muted">
+            Wybierz obiekt z listy rozwijanej lub kliknij na węzeł w grafie relacji.
+            To jest obiekt, który chcesz wzmocnić lub osłabić.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">2. Wybierz cel sterowania</h3>
+          <p class="text-terminal-muted">
+            <strong>WZMOCNIĆ</strong> - Zwiększyć wpływ obiektu w systemie<br />
+            <strong>OSŁABIĆ</strong> - Zmniejszyć wpływ obiektu w systemie
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">3. Uruchom symulację</h3>
+          <p class="text-terminal-muted">
+            System przeanalizuje graf relacji używając algorytmu BFS i znajdzie wszystkie ścieżki wpływu
+            prowadzące do wybranego obiektu. Następnie obliczy dźwignię sterowniczą dla każdego węzła.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">4. Przeczytaj rekomendacje</h3>
+          <p class="text-terminal-muted">
+            System wyświetli główną rekomendację (najwyższa dźwignia sterownicza) oraz alternatywne opcje.
+            Każda rekomendacja zawiera:
+          </p>
+          <ul class="list-disc list-inside ml-4 mt-2 text-terminal-muted space-y-1">
+            <li><strong>Akcję</strong> - CO zrobić (który obiekt wzmocnić/osłabić)</li>
+            <li><strong>Uzasadnienie</strong> - DLACZEGO (parametry cybernetyczne)</li>
+            <li><strong>Oczekiwany wpływ</strong> - Siła wpływu (0-100%)</li>
+            <li><strong>Pewność</strong> - Rzetelność relacji (0-100%)</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-terminal-accent mb-2">5. Wygeneruj strategię AI (opcjonalnie)</h3>
+          <p class="text-terminal-muted">
+            Kliknij [GENERUJ STRATEGIĘ AI] aby otrzymać szczegółową strategię sterowania
+            wygenerowaną przez AI zgodnie z teorią Kosseckiego. Strategia uwzględnia:
+          </p>
+          <ul class="list-disc list-inside ml-4 mt-2 text-terminal-muted space-y-1">
+            <li>Bilans mocy swobodnej (available_power)</li>
+            <li>Sprzężenia zwrotne (positive/negative feedback)</li>
+            <li>Rzetelność relacji (certainty_score)</li>
+            <li>Dźwignię sterowniczą (leverage = power × influence × certainty)</li>
+          </ul>
+        </div>
+        
+        <div class="card-terminal p-4 border-2 border-control-cognitive bg-control-cognitive/10">
+          <h3 class="font-bold text-control-cognitive mb-2 uppercase">
+            📘 Teoria Kosseckiego
+          </h3>
+          <p class="text-sm text-terminal-muted">
+            <strong>Dźwignia Sterownicza (Control Leverage)</strong> to kluczowy parametr w teorii Kosseckiego.
+            Określa jak skutecznie możesz wpłynąć na dany obiekt poprzez pośrednie sterowanie innym obiektem.
+          </p>
+          <p class="text-sm text-terminal-muted mt-2">
+            <code>Leverage = Available_Power × Influence_Strength × Certainty_Score</code>
+          </p>
+          <p class="text-sm text-terminal-muted mt-2">
+            Im wyższa dźwignia, tym bardziej efektywne sterowanie. Uwzględnia ona zarówno możliwości obiektu (moc),
+            jak i jakość informacji o relacji (rzetelność).
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="card-terminal p-4 mt-6 text-center">
+      <div class="flex justify-center gap-4">
+        <a 
+          href="/dashboard" 
+          class="px-4 py-2 bg-terminal-accent text-terminal-bg font-bold uppercase tracking-wider hover:bg-terminal-accent/80"
+        >
+          [POWRÓT DO DASHBOARD]
+        </a>
+        <a 
+          href="/dashboard/recon" 
+          class="px-4 py-2 bg-control-cognitive text-white font-bold uppercase tracking-wider hover:bg-control-cognitive/80"
+        >
+          [CENTRUM ZWIADU]
+        </a>
+      </div>
+      
+      <p class="mt-4 text-xs text-terminal-muted">
+        Moduł Decyzyjny v1.0 | Teoria: doc. Józef Kossecki "Metacybernetyka"
+      </p>
+    </footer>
+  </main>
+</Layout>
+
+<script>
+  /**
+   * @cybernetic Client-side hydration dla DecisionSimulator
+   */
+  import { createRoot } from 'react-dom/client';
+  import { createElement } from 'react';
+  import { DecisionSimulator } from '../../components/cybernetics/DecisionSimulator';
+
+  // Hydrate DecisionSimulator
+  const simulatorContainer = document.getElementById('decision-simulator');
+  if (simulatorContainer) {
+    const root = createRoot(simulatorContainer);
+    root.render(createElement(DecisionSimulator, {}));
+  }
+</script>
+
