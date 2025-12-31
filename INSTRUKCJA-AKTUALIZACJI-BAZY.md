@@ -10,7 +10,7 @@ Baza danych wymaga aktualizacji o nowe kolumny dla Receptora 2.0.
 
 ### Krok 1: Otwórz Supabase Dashboard
 
-https://app.supabase.com/project/qqxgegdcygqrptuviwmo
+Przejdź do swojego projektu Supabase.
 
 ### Krok 2: Przejdź do SQL Editor
 
@@ -49,13 +49,7 @@ Sprawdź czy zobaczysz:
 ### Jeśli masz zainstalowany psql:
 
 ```bash
-# Ustaw zmienne (użyj swoich danych z Supabase)
-$env:PGHOST = "db.qqxgegdcygqrptuviwmo.supabase.co"
-$env:PGDATABASE = "postgres"
-$env:PGUSER = "postgres"
-$env:PGPASSWORD = "[YOUR_DATABASE_PASSWORD]"
-$env:PGPORT = "5432"
-
+# Ustaw zmienne środowiskowe z Twojego pliku .env
 # Uruchom schema
 psql -f schema-receptor-sources.sql
 ```
@@ -95,42 +89,29 @@ psql -f schema-receptor-sources.sql
 
 ## Weryfikacja po aktualizacji
 
-Uruchom test ponownie:
+Uruchom serwer dev:
 
 ```bash
-$env:OPENROUTER_API_KEY="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"
-$env:SUPABASE_URL="https://qqxgegdcygqrptuviwmo.supabase.co"
-$env:SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeGdlZ2RjeWdxcnB0dXZpd21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MjIzMjgsImV4cCI6MjA4MjA5ODMyOH0.AnRsFOgb-X9GCR9Dt3bEMNV_H_cxt_kUiUmGDFc2F4o"
-npx tsx test-scraper.ts
+npm run dev
 ```
 
-Powinieneś zobaczyć:
+Otwórz Centrum Zwiadu:
 ```
-✓ Utworzono obiektów: 2
-✓ Utworzono relacji: 1
-✓ Certainty Score: 0.90
-✓ Raw Signal ID: [UUID]
+http://localhost:4321/dashboard/recon
 ```
+
+Powinieneś móc:
+- Dodawać nowe źródła
+- Skanować URL-e
+- Sprawdzać RSS feeds
 
 ---
 
 ## Po pomyślnej aktualizacji
 
-Możesz uruchomić pełny test systemu:
-
-### Test Centrum Zwiadu (UI):
-```
-http://localhost:4321/dashboard/recon
-```
-
-### Test RSS Monitora:
-```bash
-npx tsx test-rss.ts
-```
+Możesz uruchomić pełny test systemu w UI.
 
 ---
 
-**Status:** ⚠️ **WYMAGANA AKTUALIZACJA BAZY DANYCH**
-
-Po aktualizacji system będzie w pełni funkcjonalny.
+**Status:** ✅ Po aktualizacji system będzie w pełni funkcjonalny.
 
