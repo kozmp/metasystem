@@ -9,6 +9,7 @@
 
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase/client';
+import { DecisionSimulator } from '../../components/cybernetics/DecisionSimulator';
 
 // Pobierz listę obiektów do wyboru
 let objects: Array<{ id: string; name: string }> = [];
@@ -30,8 +31,8 @@ try {
   description="Moduł Decyzyjny - Analiza wpływu i rekomendacje sterownicze"
 >
   <main class="min-h-screen p-6">
-    <!-- Kontener dla React Component -->
-    <div id="decision-simulator" data-objects={JSON.stringify(objects)}></div>
+    <!-- React Component z Astro client directive -->
+    <DecisionSimulator client:load />
     
     <!-- Instrukcja użytkowania -->
     <section class="card-terminal p-6 mt-6">
@@ -134,20 +135,4 @@ try {
     </footer>
   </main>
 </Layout>
-
-<script>
-  /**
-   * @cybernetic Client-side hydration dla DecisionSimulator
-   */
-  import { createRoot } from 'react-dom/client';
-  import { createElement } from 'react';
-  import { DecisionSimulator } from '../../components/cybernetics/DecisionSimulator';
-
-  // Hydrate DecisionSimulator
-  const simulatorContainer = document.getElementById('decision-simulator');
-  if (simulatorContainer) {
-    const root = createRoot(simulatorContainer);
-    root.render(createElement(DecisionSimulator, {}));
-  }
-</script>
 
