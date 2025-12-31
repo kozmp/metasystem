@@ -41,7 +41,7 @@ OPENROUTER_API_KEY=twój_nowy_klucz_tutaj
 
 ### Krok 3: Wyczyść historię Git ⚠️ WAŻNE
 
-Usunięcie plików z repozytorium NIE usuwa ich z historii git. 
+Usunięcie plików z repozytorium NIE usuwa ich z historii git.
 Musisz wyczyścić historię!
 
 #### Opcja A: BFG Repo-Cleaner (ZALECANE - szybsze)
@@ -66,6 +66,7 @@ git push --force
 ```
 
 Plik `passwords.txt`:
+
 ```
 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===>REMOVED
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeGdlZ2RjeWdxcnB0dXZpd21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MjIzMjgsImV4cCI6MjA4MjA5ODMyOH0.AnRsFOgb-X9GCR9Dt3bEMNV_H_cxt_kUiUmGDFc2F4o===>REMOVED
@@ -116,11 +117,13 @@ git push origin master --force
 ### Krok 5: Weryfikacja
 
 Sprawdź czy klucze zniknęły z GitHub:
+
 ```
 https://github.com/kozmp/metasystem
 ```
 
 Użyj GitHub search:
+
 ```
 sk-or-v1-a6eb
 ```
@@ -134,6 +137,7 @@ Jeśli nadal widzisz klucze, powtórz Krok 3.
 ### 1. Nigdy nie commituj plików .env
 
 Plik `.gitignore` został zaktualizowany i zawiera:
+
 ```
 .env
 .env.local
@@ -146,12 +150,14 @@ test-rss.ts
 ### 2. Używaj zmiennych środowiskowych
 
 Zawsze:
+
 ```bash
 # W terminalu (PowerShell):
 $env:OPENROUTER_API_KEY="your_key_here"
 ```
 
 Nigdy:
+
 ```javascript
 // ❌ ZŁE
 const apiKey = "sk-or-v1-xxxxx";
@@ -195,15 +201,19 @@ Upewnij się że masz włączone notyfikacje.
 ## 🆘 Pomoc
 
 ### GitHub Support
+
 https://support.github.com/
 
 ### OpenRouter Support
+
 support@openrouter.ai
 
 ### Git BFG Repo-Cleaner
+
 https://rtyley.github.io/bfg-repo-cleaner/
 
 ### git-filter-repo
+
 https://github.com/newren/git-filter-repo
 
 ---
@@ -216,7 +226,16 @@ https://github.com/newren/git-filter-repo
 
 ---
 
-**Status:** ⚠️ **WYMAGANA AKCJA - Wykonaj kroki 1-5 NATYCHMIAST**
+## ✅ STATUS WYKONANIA
 
-**Priorytet:** 🔴 **KRYTYCZNY**
+- [x] Krok 1: Wygenerowano nowy klucz API ✅
+- [x] Krok 2: Zaktualizowano `.env` z nowym kluczem ✅
+- [x] Krok 3: Wyczyszczono historię git (BFG Repo-Cleaner) ✅
+- [x] Krok 4: Force push wykonany ✅
+- [x] Krok 5: Zweryfikowano - klucze usunięte z GitHub ✅
 
+**Status:** ✅ **NAPRAWA ZAKOŃCZONA POMYŚLNIE**
+
+**Data wykonania:** 2024-12-31  
+**Nowy klucz:** końcówka `...25fe`  
+**Metoda czyszczenia:** BFG Repo-Cleaner v1.14.0
