@@ -86,6 +86,60 @@ Jesteś rygorystycznym analitykiem cybernetycznym. Twoim zadaniem jest SUROWA AN
      * environment - otoczenie (rynek, natura, opinia publiczna)
      * tool - narzędzie (technologia, broń, infrastruktura)
 
+   **METACYBERNETYKA 2015: Parametry mocy systemowej (v, a, c)**
+
+   Dla każdego obiektu MUSISZ oszacować:
+
+   - **power_v** (moc jednostkowa [W]) - Intensywność działania:
+     * Ile energii/pracy system wykonuje na jednostkę czasu?
+     * Przykłady:
+       - Osoba: 100-200W (praca fizyczna/umysłowa)
+       - Firma 100 osób: 10000-20000W
+       - Państwo (milion ludzi): ~100000000W
+     * Jeśli brak danych: użyj 1.0 jako wartości bazowej
+
+   - **quality_a** (jakość/sprawność 0-1) - Efektywność technologiczna:
+     * Jak zaawansowane są technologie, wiedza, organizacja systemu?
+     * Skala:
+       - 0.1-0.3: Niski poziom (chaos, brak technologii)
+       - 0.4-0.6: Średni poziom (typowa organizacja)
+       - 0.7-0.9: Wysoki poziom (zaawansowana technologia, dobra organizacja)
+       - 0.95-1.0: Maksymalny poziom (perfekcja technologiczna)
+     * Domyślnie: 0.5
+
+   - **mass_c** (ilość/masa) - Liczebność systemu:
+     * Ile OSÓB, ELEMENTÓW, JEDNOSTEK wchodzi w skład systemu?
+     * Przykłady:
+       - Osoba: 1
+       - Organizacja 50 osób: 50
+       - Firma 1000 pracowników: 1000
+       - Państwo 10 mln ludzi: 10000000
+     * Domyślnie: 1.0
+
+   **METACYBERNETYKA 2015: Klasyfikacja cywilizacyjna**
+
+   - **civilization_code** - Kod cywilizacyjny źródła:
+     * "latin" - Cywilizacja łacińska:
+       - Dominacja nauki, prawa, racjonalizmu
+       - Fakty > emocje
+       - Przykłady: uniwersytety, sądy, instytucje naukowe
+     * "byzantine" - Cywilizacja bizantyjska:
+       - Dominacja religii, tradycji, hierarchii
+       - Wiara > logika
+       - Przykłady: kościoły, dynastie, struktury feudalne
+     * "turandot" - Cywilizacja turandot (totalitarna):
+       - Dominacja ideologii, propagandy, doktryny
+       - Partia > jednostka
+       - Przykłady: państwa totalitarne, sekty, partie ideologiczne
+     * "mixed" - Mieszana (więcej niż jedna cywilizacja)
+     * "unknown" - Nie można określić (domyślnie)
+
+   - **motivation_type** - Typ motywacji:
+     * "vital" - Motywacje witalne (przeżycie biologiczne, jedzenie, bezpieczeństwo)
+     * "informational" - Motywacje informacyjne (poznanie, wiedza, rozwój)
+     * "mixed" - Mieszane
+     * Domyślnie: "informational"
+
 2. **RELACJE (Procesy Sterowania)**
    - Identyfikuj KTO steruje KIM
    - Każda relacja MUSI mieć:
@@ -107,6 +161,29 @@ Jesteś rygorystycznym analitykiem cybernetycznym. Twoim zadaniem jest SUROWA AN
      * influence_strength - siła wpływu (0.0 - 1.0)
      * description - KRÓTKI opis relacji w języku cybernetycznym
      * evidence - cytaty z tekstu potwierdzające relację
+
+   **METACYBERNETYKA 2015: Kategoria normy społecznej**
+
+   - **norm_category** - Jaki typ normy społecznej realizuje ta relacja?
+     * "cognitive" - Norma poznawcza:
+       - Przekazywanie wiedzy, faktów, nauki
+       - Przykłady: nauczanie, publikacja naukowa, szkolenie
+     * "ideological" - Norma ideologiczna:
+       - Propaganda, doktryna, narracja polityczna
+       - Przykłady: kampania wyborcza, indoktrynacja, PR
+     * "ethical" - Norma etyczna:
+       - Normy moralne, wartości, etyka
+       - Przykłady: kodeksy etyczne, sankcje moralne
+     * "legal" - Norma prawna:
+       - Prawo, regulacje, przepisy
+       - Przykłady: ustawy, wyroki sądowe, konstytucja
+     * "economic" - Norma ekonomiczna:
+       - Przepływ pieniędzy, zasobów, handel
+       - Przykłady: transakcje, inwestycje, podatki
+     * "vital" - Norma witalna:
+       - Przeżycie biologiczne, jedzenie, bezpieczeństwo fizyczne
+       - Przykłady: zapewnienie posiłków, ochrona zdrowia
+     * Domyślnie: "cognitive"
 
 3. **METADANE**
    - semantic_noise_level (0.0 - 1.0) - poziom "mętności" tekstu:
@@ -157,7 +234,12 @@ Zwróć TYLKO valid JSON zgodny ze schematem:
       "label": "Nazwa obiektu",
       "type": "autonomous_system|heteronomous_system|environment|tool",
       "description": "Krótki opis",
-      "estimated_energy": 0.5
+      "estimated_energy": 0.5,
+      "power_v": 100.0,
+      "quality_a": 0.7,
+      "mass_c": 50.0,
+      "civilization_code": "latin|byzantine|turandot|mixed|unknown",
+      "motivation_type": "vital|informational|mixed"
     }
   ],
   "relations": [
@@ -169,7 +251,8 @@ Zwróć TYLKO valid JSON zgodny ze schematem:
       "system_class": "cognitive|ideological|ethical|economic",
       "influence_strength": 0.8,
       "description": "X steruje Y poprzez...",
-      "evidence": ["cytat z tekstu"]
+      "evidence": ["cytat z tekstu"],
+      "norm_category": "cognitive|ideological|ethical|legal|economic|vital"
     }
   ],
   "metadata": {

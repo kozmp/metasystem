@@ -1,0 +1,459 @@
+---
+/**
+ * @cybernetic Strona benchmarkowa Rust/Wasm vs TypeScript
+ * Dostęp: http://localhost:4322/test-benchmark
+ */
+---
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benchmark Rust/Wasm vs TypeScript - KMS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #22c55e;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #3b82f6;
+    }
+
+    button {
+      background: #22c55e;
+      color: #0f172a;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    button:hover {
+      background: #16a34a;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #475569;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.secondary {
+      background: #3b82f6;
+    }
+
+    button.secondary:hover {
+      background: #2563eb;
+    }
+
+    .log {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .log-line {
+      margin-bottom: 0.25rem;
+    }
+
+    .log-line.success { color: #22c55e; }
+    .log-line.error { color: #ef4444; }
+    .log-line.warning { color: #f59e0b; }
+    .log-line.info { color: #3b82f6; }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .results-table th,
+    .results-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+
+    .results-table th {
+      background: #0f172a;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .results-table td {
+      color: #e2e8f0;
+    }
+
+    .results-table tr:hover {
+      background: #0f172a;
+    }
+
+    .speedup {
+      font-weight: 700;
+    }
+
+    .speedup.good { color: #22c55e; }
+    .speedup.medium { color: #f59e0b; }
+    .speedup.poor { color: #ef4444; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .summary-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 1rem;
+    }
+
+    .summary-card-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-card-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    .recommendation {
+      background: #0f172a;
+      border-left: 4px solid #22c55e;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .recommendation.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .recommendation.error {
+      border-left-color: #ef4444;
+    }
+
+    .progress {
+      width: 100%;
+      height: 4px;
+      background: #334155;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #22c55e;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ Benchmark Rust/Wasm vs TypeScript</h1>
+    <p class="subtitle">Pomiar wydajności BFS Graph Traversal • KOSSECKI METASYSTEM</p>
+
+    <div class="section">
+      <h2>1. Kontrola</h2>
+      <button id="runQuick" class="secondary">🚀 Quick Test (50, 100, 200)</button>
+      <button id="runFull">⚡ Full Benchmark (50, 100, 200, 500, 1000)</button>
+      <button id="runCustom" class="secondary">🎯 Custom Size</button>
+      <button id="clearLog" style="background: #475569; margin-left: 1rem;">🗑️ Wyczyść</button>
+
+      <div id="progress" class="progress" style="display: none;">
+        <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>2. Logi</h2>
+      <div class="log" id="logContainer"></div>
+    </div>
+
+    <div class="section" id="summarySection" style="display: none;">
+      <h2>3. Podsumowanie</h2>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div id="recommendation"></div>
+    </div>
+
+    <div class="section" id="resultsSection" style="display: none;">
+      <h2>4. Wyniki Szczegółowe</h2>
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Rozmiar grafu</th>
+            <th>Korelacje</th>
+            <th>TypeScript (ms)</th>
+            <th>Wasm (ms)</th>
+            <th>Speedup</th>
+            <th>Zgodność</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Logger
+    const logContainer = document.getElementById('logContainer');
+    function log(message, type = 'info') {
+      const line = document.createElement('div');
+      line.className = `log-line ${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.appendChild(line);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // Progress
+    function showProgress() {
+      document.getElementById('progress').style.display = 'block';
+    }
+
+    function hideProgress() {
+      document.getElementById('progress').style.display = 'none';
+    }
+
+    function updateProgress(percent) {
+      document.getElementById('progressBar').style.width = `${percent}%`;
+    }
+
+    // Clear logs
+    document.getElementById('clearLog').addEventListener('click', () => {
+      logContainer.innerHTML = '';
+      document.getElementById('summarySection').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'none';
+      log('Logi wyczyszczone', 'info');
+    });
+
+    // Run benchmark
+    async function runBenchmark(sizes) {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = true);
+
+      try {
+        log(`Uruchamiam benchmark dla rozmiarów: ${sizes.join(', ')}`, 'info');
+        showProgress();
+
+        const { runFullBenchmark } = await import('/src/lib/cybernetics/wasm_core/benchmark.ts');
+
+        // Przekieruj console.log do naszego loggera
+        const originalLog = console.log;
+        console.log = function(...args) {
+          const message = args.join(' ');
+          if (message.includes('[BENCHMARK]')) {
+            if (message.includes('✓')) {
+              log(message.replace('[BENCHMARK] ', ''), 'success');
+            } else if (message.includes('❌')) {
+              log(message.replace('[BENCHMARK] ', ''), 'error');
+            } else if (message.includes('⚠️')) {
+              log(message.replace('[BENCHMARK] ', ''), 'warning');
+            } else {
+              log(message.replace('[BENCHMARK] ', ''), 'info');
+            }
+          }
+          originalLog.apply(console, args);
+        };
+
+        const report = await runFullBenchmark(sizes);
+
+        // Przywróć oryginalny console.log
+        console.log = originalLog;
+
+        log('✅ Benchmark zakończony!', 'success');
+        hideProgress();
+
+        // Wyświetl wyniki
+        displayResults(report);
+
+      } catch (error) {
+        log(`❌ Błąd: ${error.message}`, 'error');
+        console.error('Szczegóły błędu:', error);
+        hideProgress();
+      } finally {
+        buttons.forEach(btn => btn.disabled = false);
+      }
+    }
+
+    // Display results
+    function displayResults(report) {
+      // Summary
+      const summarySection = document.getElementById('summarySection');
+      const summaryGrid = document.getElementById('summaryGrid');
+      summarySection.style.display = 'block';
+      summaryGrid.innerHTML = '';
+
+      if (report.wasm_available) {
+        summaryGrid.innerHTML = `
+          <div class="summary-card">
+            <div class="summary-card-label">Średnie przyspieszenie</div>
+            <div class="summary-card-value">${report.summary.avg_speedup.toFixed(2)}x</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Min przyspieszenie</div>
+            <div class="summary-card-value">${report.summary.min_speedup.toFixed(2)}x</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Max przyspieszenie</div>
+            <div class="summary-card-value">${report.summary.max_speedup.toFixed(2)}x</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-label">Rekomendowany threshold</div>
+            <div class="summary-card-value">${report.summary.recommended_threshold} węzłów</div>
+          </div>
+        `;
+
+        // Recommendation
+        const recommendation = document.getElementById('recommendation');
+        let recClass = 'recommendation';
+        let recText = '';
+
+        if (report.summary.avg_speedup >= 2.0) {
+          recClass = 'recommendation';
+          recText = `
+            <strong>✅ REKOMENDACJA: Użyj Wasm</strong><br>
+            Średnie przyspieszenie ${report.summary.avg_speedup.toFixed(2)}x jest znaczące.
+            Ustaw threshold na ${report.summary.recommended_threshold} węzłów w pathfinder-optimized.ts.
+          `;
+        } else if (report.summary.avg_speedup >= 1.2) {
+          recClass = 'recommendation warning';
+          recText = `
+            <strong>⚠️ UWAGA: Umiarkowana korzyść</strong><br>
+            Wasm przyspiesza ${report.summary.avg_speedup.toFixed(2)}x - rozważ threshold >= ${report.summary.recommended_threshold} węzłów.
+          `;
+        } else {
+          recClass = 'recommendation error';
+          recText = `
+            <strong>❌ OSTRZEŻENIE: Brak znaczącego przyspieszenia</strong><br>
+            Wasm nie daje korzyści (${report.summary.avg_speedup.toFixed(2)}x). Pozostań przy TypeScript lub optymalizuj kod Rust.
+          `;
+        }
+
+        recommendation.className = recClass;
+        recommendation.innerHTML = recText;
+
+      } else {
+        summaryGrid.innerHTML = `
+          <div class="summary-card">
+            <div class="summary-card-label">Status Wasm</div>
+            <div class="summary-card-value" style="color: #ef4444;">❌ Niedostępny</div>
+          </div>
+        `;
+
+        const recommendation = document.getElementById('recommendation');
+        recommendation.className = 'recommendation error';
+        recommendation.innerHTML = `
+          <strong>⚠️ Wasm niedostępny</strong><br>
+          Moduł Wasm nie został załadowany. Sprawdź konsolę przeglądarki (F12) dla szczegółów.
+        `;
+      }
+
+      // Results table
+      const resultsSection = document.getElementById('resultsSection');
+      const resultsBody = document.getElementById('resultsBody');
+      resultsSection.style.display = 'block';
+      resultsBody.innerHTML = '';
+
+      report.results.forEach(result => {
+        const row = document.createElement('tr');
+
+        const speedupClass = result.speedup
+          ? (result.speedup >= 2.0 ? 'good' : result.speedup >= 1.2 ? 'medium' : 'poor')
+          : '';
+
+        row.innerHTML = `
+          <td>${result.object_count} węzłów</td>
+          <td>${result.correlation_count}</td>
+          <td>${result.typescript_time_ms.toFixed(2)} ms</td>
+          <td>${result.wasm_time_ms?.toFixed(2) || 'N/A'} ms</td>
+          <td class="speedup ${speedupClass}">${result.speedup?.toFixed(2) + 'x' || 'N/A'}</td>
+          <td>${result.results_match ? '✅' : (result.wasm_available ? '❌' : '-')}</td>
+        `;
+
+        resultsBody.appendChild(row);
+      });
+    }
+
+    // Event listeners
+    document.getElementById('runQuick').addEventListener('click', () => {
+      runBenchmark([50, 100, 200]);
+    });
+
+    document.getElementById('runFull').addEventListener('click', () => {
+      runBenchmark([50, 100, 200, 500, 1000]);
+    });
+
+    document.getElementById('runCustom').addEventListener('click', async () => {
+      const size = prompt('Podaj rozmiar grafu (liczba węzłów):', '250');
+      if (size && !isNaN(size)) {
+        await runBenchmark([parseInt(size)]);
+      }
+    });
+
+    // Initial log
+    log('Benchmark gotowy do uruchomienia', 'info');
+    log('Wybierz Quick Test (szybki) lub Full Benchmark (pełny)', 'info');
+  </script>
+</body>
+</html>

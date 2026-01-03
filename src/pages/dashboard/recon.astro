@@ -2,7 +2,7 @@
 /**
  * @fileoverview Dashboard - Centrum Zwiadu (Reconnaissance Center)
  * @cybernetic Efektor dla Receptora 2.0 - Autonomiczny Zwiadowca
- * 
+ *
  * Zgodnie z teorią Kosseckiego:
  * - Receptor aktywny (scraping) i pasywny (RSS)
  * - Metryki rzetelności w czasie rzeczywistym
@@ -11,6 +11,7 @@
  */
 
 import Layout from '../../layouts/Layout.astro';
+import { ReconPanel } from '../../components/cybernetics/ReconPanel';
 ---
 
 <Layout 
@@ -18,9 +19,9 @@ import Layout from '../../layouts/Layout.astro';
   description="Autonomiczny zwiadowca informacyjny - Receptor 2.0"
 >
   <main class="min-h-screen p-6">
-    <!-- Kontener dla React Component -->
-    <div id="recon-panel"></div>
-    
+    <!-- React Component z Astro client directive -->
+    <ReconPanel client:load />
+
     <!-- Instrukcja użytkowania -->
     <section class="card-terminal p-6 mt-6">
       <h2 class="text-xl font-bold text-terminal-accent uppercase tracking-wider mb-4">
@@ -119,20 +120,4 @@ import Layout from '../../layouts/Layout.astro';
     </footer>
   </main>
 </Layout>
-
-<script>
-  /**
-   * @cybernetic Client-side hydration dla ReconPanel
-   */
-  import { createRoot } from 'react-dom/client';
-  import { createElement } from 'react';
-  import { ReconPanel } from '../../components/cybernetics/ReconPanel';
-
-  // Hydrate ReconPanel
-  const reconPanel = document.getElementById('recon-panel');
-  if (reconPanel) {
-    const root = createRoot(reconPanel);
-    root.render(createElement(ReconPanel));
-  }
-</script>
 

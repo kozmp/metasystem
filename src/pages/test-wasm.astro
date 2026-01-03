@@ -1,0 +1,375 @@
+---
+/**
+ * @cybernetic Strona testowa dla modułu Wasm
+ * Dostęp: http://localhost:4321/test-wasm
+ */
+---
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Modułu Wasm - KMS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #22c55e;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+
+    .section {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #3b82f6;
+    }
+
+    button {
+      background: #22c55e;
+      color: #0f172a;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #16a34a;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #475569;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .log {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .log-line {
+      margin-bottom: 0.25rem;
+    }
+
+    .log-line.success { color: #22c55e; }
+    .log-line.error { color: #ef4444; }
+    .log-line.warning { color: #f59e0b; }
+    .log-line.info { color: #3b82f6; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 1rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    .results {
+      margin-top: 1rem;
+    }
+
+    .node {
+      background: #0f172a;
+      border-left: 3px solid #22c55e;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 4px;
+    }
+
+    .node-name {
+      font-weight: 700;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .node-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🦀 Test Modułu Rust/Wasm</h1>
+    <p class="subtitle">Weryfikacja integracji z Vite • KOSSECKI METASYSTEM</p>
+
+    <div class="section">
+      <h2>1. Kontrola</h2>
+      <button id="runTest">🚀 Uruchom Test BFS</button>
+      <button id="clearLog" style="margin-left: 1rem; background: #475569;">🗑️ Wyczyść logi</button>
+    </div>
+
+    <div class="section">
+      <h2>2. Status</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Wasm Status</div>
+          <div class="stat-value" id="wasmStatus">...</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Czas wykonania</div>
+          <div class="stat-value" id="execTime">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Węzły wpływowe</div>
+          <div class="stat-value" id="nodeCount">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Rozmiar modułu</div>
+          <div class="stat-value">130.5 KB</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>3. Logi</h2>
+      <div class="log" id="logContainer"></div>
+    </div>
+
+    <div class="section" id="resultsSection" style="display: none;">
+      <h2>4. Wyniki</h2>
+      <div class="results" id="results"></div>
+    </div>
+  </div>
+
+  <script>
+    // Test data
+    const testObjects = [
+      {
+        id: 'obj1',
+        name: 'Parlament RP',
+        description: 'Sejm i Senat',
+        system_class: 'autonomous_system',
+        control_system_type: 'ethical',
+        energy_params: { working_power: 100, idle_power: 20, available_power: 80 },
+        created_at: '2025-01-01T00:00:00Z',
+      },
+      {
+        id: 'obj2',
+        name: 'Rząd RP',
+        description: 'Rada Ministrów',
+        system_class: 'autonomous_system',
+        control_system_type: 'economic',
+        energy_params: { working_power: 150, idle_power: 30, available_power: 120 },
+        created_at: '2025-01-01T00:00:00Z',
+      },
+      {
+        id: 'obj3',
+        name: 'Obywatele',
+        description: 'Społeczeństwo polskie',
+        system_class: 'environment',
+        control_system_type: 'ethical',
+        energy_params: { working_power: 1000, idle_power: 200, available_power: 800 },
+        created_at: '2025-01-01T00:00:00Z',
+      },
+    ];
+
+    const testCorrelations = [
+      {
+        id: 'corr1',
+        source_id: 'obj3',
+        target_id: 'obj1',
+        relation_type: 'direct_control',
+        certainty_score: 0.9,
+        impact_factor: 0.8,
+        source_name: 'Konstytucja RP',
+        created_at: '2025-01-01T00:00:00Z',
+      },
+      {
+        id: 'corr2',
+        source_id: 'obj1',
+        target_id: 'obj2',
+        relation_type: 'positive_feedback',
+        certainty_score: 0.85,
+        impact_factor: 0.7,
+        source_name: 'Konstytucja RP',
+        created_at: '2025-01-01T00:00:00Z',
+      },
+      {
+        id: 'corr3',
+        source_id: 'obj2',
+        target_id: 'obj3',
+        relation_type: 'supply',
+        certainty_score: 0.75,
+        impact_factor: 0.6,
+        source_name: 'Ustawa budżetowa',
+        created_at: '2025-01-01T00:00:00Z',
+      },
+    ];
+
+    // Logger
+    const logContainer = document.getElementById('logContainer');
+    function log(message, type = 'info') {
+      const line = document.createElement('div');
+      line.className = `log-line ${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.appendChild(line);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // Clear logs
+    document.getElementById('clearLog').addEventListener('click', () => {
+      logContainer.innerHTML = '';
+      log('Logi wyczyszczone', 'info');
+    });
+
+    // Run test
+    document.getElementById('runTest').addEventListener('click', async () => {
+      const button = document.getElementById('runTest');
+      button.disabled = true;
+
+      try {
+        log('Rozpoczynam test...', 'info');
+        log('Importowanie modułu bridge.ts...', 'info');
+
+        const { findInfluencePathsWasm, isWasmAvailable } = await import('/src/lib/cybernetics/wasm_core/bridge.ts');
+        log('✅ Bridge zaimportowany', 'success');
+
+        log('Sprawdzanie dostępności Wasm...', 'info');
+        const wasmAvailable = await isWasmAvailable();
+        document.getElementById('wasmStatus').textContent = wasmAvailable ? '✅ OK' : '❌ FAIL';
+
+        if (!wasmAvailable) {
+          log('❌ Wasm niedostępny!', 'error');
+          log('Sprawdź konsol przeglądarki (F12) dla szczegółów', 'warning');
+          button.disabled = false;
+          return;
+        }
+
+        log('✅ Wasm dostępny', 'success');
+        log('Wywołanie wasm_find_influence_paths...', 'info');
+
+        const startTime = performance.now();
+        const result = await findInfluencePathsWasm(testObjects, testCorrelations, 'obj1', 'strengthen');
+        const endTime = performance.now();
+        const execTime = (endTime - startTime).toFixed(2);
+
+        log(`✅ Funkcja wykonana w ${execTime}ms`, 'success');
+        log(`Znaleziono ${result.length} wpływowych węzłów`, 'success');
+
+        // Update stats
+        document.getElementById('execTime').textContent = `${execTime}ms`;
+        document.getElementById('nodeCount').textContent = result.length;
+
+        // Display results
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsContainer = document.getElementById('results');
+        resultsSection.style.display = 'block';
+        resultsContainer.innerHTML = '';
+
+        result.forEach((node, index) => {
+          const nodeEl = document.createElement('div');
+          nodeEl.className = 'node';
+          nodeEl.innerHTML = `
+            <div class="node-name">#${index + 1} ${node.object_name}</div>
+            <div class="node-details">
+              <div><strong>Dźwignia:</strong> ${node.control_leverage.toFixed(3)}</div>
+              <div><strong>Wpływ:</strong> ${node.influence_strength.toFixed(3)}</div>
+              <div><strong>Ścieżek:</strong> ${node.path_count}</div>
+              <div><strong>Sprzężenia:</strong> ${node.feedback_multiplier.toFixed(2)}x</div>
+              <div><strong>Rzetelność:</strong> ${(node.certainty_score * 100).toFixed(0)}%</div>
+              <div><strong>Moc:</strong> ${node.available_power.toFixed(0)}</div>
+            </div>
+          `;
+          resultsContainer.appendChild(nodeEl);
+        });
+
+        log('✅ Test zakończony sukcesem!', 'success');
+
+      } catch (error) {
+        log(`❌ Błąd: ${error.message}`, 'error');
+        console.error('Szczegóły błędu:', error);
+        document.getElementById('wasmStatus').textContent = '❌ ERROR';
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Initial check
+    (async () => {
+      try {
+        log('Inicjalizacja...', 'info');
+        const { isWasmAvailable } = await import('/src/lib/cybernetics/wasm_core/bridge.ts');
+        const available = await isWasmAvailable();
+        document.getElementById('wasmStatus').textContent = available ? '✅ OK' : '⚠️ PENDING';
+        if (available) {
+          log('✅ Moduł Wasm gotowy', 'success');
+        } else {
+          log('⚠️ Moduł Wasm wymaga inicjalizacji', 'warning');
+        }
+      } catch (error) {
+        log(`❌ Błąd inicjalizacji: ${error.message}`, 'error');
+        document.getElementById('wasmStatus').textContent = '❌ ERROR';
+      }
+    })();
+  </script>
+</body>
+</html>

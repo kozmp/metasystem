@@ -1,0 +1,14 @@
+/mnt/c/projekty/KOSSECKI METASYSTEM (KMS)/src/lib/cybernetics/wasm_core/target/debug/deps/serde-2cea4c4fe8f09761.d: /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/target/debug/build/serde-0c79bc1bb5bf9eba/out/private.rs
+
+/mnt/c/projekty/KOSSECKI METASYSTEM (KMS)/src/lib/cybernetics/wasm_core/target/debug/deps/libserde-2cea4c4fe8f09761.rlib: /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/target/debug/build/serde-0c79bc1bb5bf9eba/out/private.rs
+
+/mnt/c/projekty/KOSSECKI METASYSTEM (KMS)/src/lib/cybernetics/wasm_core/target/debug/deps/libserde-2cea4c4fe8f09761.rmeta: /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/target/debug/build/serde-0c79bc1bb5bf9eba/out/private.rs
+
+/home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/kozmp/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/target/debug/build/serde-0c79bc1bb5bf9eba/out/private.rs:
+
+# env-dep:OUT_DIR=/mnt/c/projekty/KOSSECKI METASYSTEM (KMS)/src/lib/cybernetics/wasm_core/target/debug/build/serde-0c79bc1bb5bf9eba/out

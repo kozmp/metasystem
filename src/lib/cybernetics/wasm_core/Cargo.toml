@@ -1,0 +1,34 @@
+[package]
+name = "wasm_core"
+version = "0.1.0"
+edition = "2021"
+authors = ["KMS Team"]
+description = "Rust/Wasm core for KOSSECKI METASYSTEM - Cybernetic graph algorithms"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+serde_json = "1.0"
+js-sys = "0.3"
+petgraph = "0.6"
+getrandom = { version = "0.2", features = ["js"] }
+
+# Optional: smaller allocator for Wasm
+wee_alloc = { version = "0.4", optional = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+# Optimize for size
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+[features]
+default = []
+small = ["wee_alloc"]

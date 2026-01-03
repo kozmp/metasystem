@@ -16,22 +16,53 @@ import type { FeedbackType, ControlType } from '../types';
 /**
  * @cybernetic Obiekt elementarny w sensie Kosseckiego
  * System autonomiczny, heteronomiczny lub element otoczenia
+ * ZAKTUALIZOWANO: Metacybernetyka 2015 - dodano parametry v, a, c oraz klasyfikację cywilizacyjną
  */
 export const ExtractedObjectSchema = z.object({
   /** Unikalny identyfikator w kontekście ekstrakcji */
   id: z.string().min(1),
-  
+
   /** Etykieta obiektu (np. "Państwo X", "Organizacja Y") */
   label: z.string().min(1),
-  
+
   /** Typ systemu */
   type: z.enum(['autonomous_system', 'heteronomous_system', 'environment', 'tool']),
-  
+
   /** Opis obiektu w kontekście */
   description: z.string().optional(),
-  
-  /** Szacowana energia dostępna (0-1, relatywna) */
+
+  /** LEGACY: Szacowana energia dostępna (0-1, relatywna) */
   estimated_energy: z.number().min(0).max(1).optional(),
+
+  // ========== METACYBERNETYKA 2015: Parametry mocy systemowej ==========
+
+  /** v - Moc jednostkowa [W]: energia na jednostkę czasu */
+  power_v: z.number().min(0).default(1.0),
+
+  /** a - Jakość/sprawność (0-1): efektywność, technologia, organizacja */
+  quality_a: z.number().min(0).max(1).default(1.0),
+
+  /** c - Ilość/masa: liczba ludzi, zasobów, elementów systemu */
+  mass_c: z.number().min(0).default(1.0),
+
+  // ========== METACYBERNETYKA 2015: Klasyfikacja cywilizacyjna ==========
+
+  /** Kod cywilizacyjny źródła */
+  civilization_code: z.enum([
+    'latin',      // Cywilizacja łacińska (nauka, prawo, racjonalizm)
+    'byzantine',  // Cywilizacja bizantyjska (religia, tradycja, hierarchia)
+    'turandot',   // Cywilizacja turandot (ideologia, totalitaryzm)
+    'mixed',      // Mieszana
+    'unknown'     // Nieznana
+  ]).default('unknown'),
+
+  /** Typ motywacji systemu */
+  motivation_type: z.enum([
+    'vital',         // Motywacje witalne (przeżycie biologiczne)
+    'informational', // Motywacje informacyjne (poznanie)
+    'economic',      // Motywacje ekonomiczne (zysk, zasoby)
+    'mixed'          // Mieszane
+  ]).default('informational'),
 });
 
 export type ExtractedObject = z.infer<typeof ExtractedObjectSchema>;
@@ -52,31 +83,44 @@ export type SignalStatus = 'CLEAR' | 'WARNING' | 'REJECT';
 /**
  * @cybernetic Relacja sterownicza między obiektami
  * Zgodnie z modelem Mazura: każdy proces ma źródło, cel, typ i koszt
+ * ZAKTUALIZOWANO: Metacybernetyka 2015 - dodano kategorię normy społecznej
  */
 export const ExtractedRelationSchema = z.object({
   /** ID obiektu źródłowego (kto steruje) */
   subject_id: z.string().min(1),
-  
+
   /** ID obiektu docelowego (kto jest sterowany) */
   object_id: z.string().min(1),
-  
+
   /** Typ procesu: energia czy informacja */
   process_type: z.enum(['energetic', 'informational', 'hybrid'] as const),
-  
+
   /** Typ sprzężenia zwrotnego */
   feedback_type: z.enum(['positive', 'negative', 'neutral'] as const),
-  
+
   /** Klasyfikacja systemu źródłowego */
   system_class: z.enum(['cognitive', 'ideological', 'ethical', 'economic'] as const),
-  
+
   /** Szacowana siła wpływu (0-1) */
   influence_strength: z.number().min(0).max(1),
-  
+
   /** Opis relacji w metajęzyku cybernetycznym */
   description: z.string(),
-  
+
   /** Dowody lub cytaty z tekstu źródłowego */
   evidence: z.array(z.string()).optional(),
+
+  // ========== METACYBERNETYKA 2015: Kategoria normy społecznej ==========
+
+  /** Kategoria normy społecznej realizowanej przez relację */
+  norm_category: z.enum([
+    'cognitive',      // Norma poznawcza (wiedza, fakty, nauka)
+    'ideological',    // Norma ideologiczna (propaganda, doktryna)
+    'ethical',        // Norma etyczna (moralność, wartości)
+    'legal',          // Norma prawna (prawo, regulacje)
+    'economic',       // Norma ekonomiczna (biznes, handel, zasoby)
+    'vital'           // Norma witalna (przeżycie, biologiczne)
+  ] as const).default('cognitive'),
 });
 
 export type ExtractedRelation = z.infer<typeof ExtractedRelationSchema>;

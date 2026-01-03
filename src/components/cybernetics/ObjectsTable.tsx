@@ -3,6 +3,7 @@
  * @cybernetic Efektor - prezentacja obiektów z bazy danych
  */
 
+import React from 'react';
 import { Eye } from 'lucide-react';
 import type { DashboardObject } from '../../lib/cybernetics/efektor/types';
 import { 

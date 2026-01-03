@@ -3,7 +3,7 @@
  * @cybernetic Receptor - transformacja surowego tekstu na strukturę cybernetyczną
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { AlertCircle, CheckCircle2, Loader2, Send } from 'lucide-react';
 import type { ReceptorInputState } from '../../lib/cybernetics/efektor/types';
 

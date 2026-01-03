@@ -1,0 +1,1 @@
+/mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/target/wasm32-unknown-unknown/release/libwasm_core.rlib: /mnt/c/projekty/KOSSECKI\ METASYSTEM\ (KMS)/src/lib/cybernetics/wasm_core/src/lib.rs
