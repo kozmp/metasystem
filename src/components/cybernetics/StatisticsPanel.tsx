@@ -3,6 +3,7 @@
  * @cybernetic Efektor - metryki rzetelności i stanu systemu
  */
 
+import React from 'react';
 import { Activity, AlertTriangle, Database, GitBranch, Shield } from 'lucide-react';
 import type { SystemStats } from '../../lib/cybernetics/efektor/types';
 

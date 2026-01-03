@@ -9,7 +9,7 @@
  * - Grubość krawędzi = siła wpływu (impact_factor)
  */
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import ForceGraph2D, { type ForceGraphMethods, type NodeObject, type LinkObject } from 'react-force-graph-2d';
 import { supabase } from '../../lib/supabase/client';
 import type { CyberneticObject, Correlation } from '../../lib/supabase/types';

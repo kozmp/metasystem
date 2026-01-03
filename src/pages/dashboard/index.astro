@@ -20,6 +20,10 @@ import type {
   CyberneticObject, 
   Correlation 
 } from '../../lib/supabase/types';
+import { StatisticsPanel } from '../../components/cybernetics/StatisticsPanel';
+import { ReceptorInputForm } from '../../components/cybernetics/ReceptorInputForm';
+import { ObjectsTable } from '../../components/cybernetics/ObjectsTable';
+import { RelationGraph } from '../../components/cybernetics/RelationGraph';
 
 // ============================================================================
 // POBIERANIE DANYCH Z SUPABASE (Server-Side)
@@ -244,12 +248,12 @@ try {
 
     <!-- Statystyki systemu -->
     <section>
-      <div id="stats-panel" data-stats={JSON.stringify(stats)}></div>
+      <StatisticsPanel client:only="react" stats={stats} />
     </section>
 
     <!-- Formularz Receptor Input -->
     <section>
-      <div id="receptor-form"></div>
+      <ReceptorInputForm client:only="react" onProcessComplete={() => {}} />
     </section>
 
     <!-- Tabela obiektów -->
@@ -257,12 +261,12 @@ try {
       <h2 class="text-xl font-bold text-terminal-accent uppercase tracking-wider mb-4">
         [DATABASE] Obiekty Cybernetyczne
       </h2>
-      <div id="objects-table" data-objects={JSON.stringify(objects)}></div>
+      <ObjectsTable client:only="react" objects={objects} onObjectClick={(id) => console.log(id)} />
     </section>
 
     <!-- Graf relacji -->
     <section>
-      <div id="relation-graph" class="w-full"></div>
+      <RelationGraph client:only="react" width={1200} height={600} className="w-full" />
     </section>
 
     <!-- Footer z metrykami -->
@@ -278,70 +282,3 @@ try {
     </footer>
   </main>
 </Layout>
-
-<script>
-  /**
-   * @cybernetic Client-side hydration dla komponentów React
-   * Astro Server Islands - komponenty renderowane tylko po stronie klienta
-   */
-  import { createRoot } from 'react-dom/client';
-  import { createElement } from 'react';
-  import { StatisticsPanel } from '../../components/cybernetics/StatisticsPanel';
-  import { ReceptorInputForm } from '../../components/cybernetics/ReceptorInputForm';
-  import { ObjectsTable } from '../../components/cybernetics/ObjectsTable';
-  import { RelationGraph } from '../../components/cybernetics/RelationGraph';
-
-  // Hydrate Statistics Panel
-  const statsPanel = document.getElementById('stats-panel');
-  if (statsPanel) {
-    const stats = JSON.parse(statsPanel.dataset.stats || '{}');
-    const root = createRoot(statsPanel);
-    root.render(createElement(StatisticsPanel, { stats }));
-  }
-
-  // Hydrate Receptor Form
-  const receptorForm = document.getElementById('receptor-form');
-  if (receptorForm) {
-    const root = createRoot(receptorForm);
-    root.render(
-      createElement(ReceptorInputForm, {
-        onProcessComplete: () => {
-          // Odśwież stronę po przetworzeniu sygnału
-          window.location.reload();
-        },
-      })
-    );
-  }
-
-  // Hydrate Objects Table
-  const objectsTable = document.getElementById('objects-table');
-  if (objectsTable) {
-    const objects = JSON.parse(objectsTable.dataset.objects || '[]');
-    const root = createRoot(objectsTable);
-    root.render(
-      createElement(ObjectsTable, {
-        objects,
-        onObjectClick: (objectId: string) => {
-          console.log('[DASHBOARD] Clicked object:', objectId);
-          // TODO: Otwórz modal z szczegółami obiektu
-        },
-      })
-    );
-  }
-
-  // Hydrate Relation Graph
-  const relationGraph = document.getElementById('relation-graph');
-  if (relationGraph) {
-    const root = createRoot(relationGraph);
-    // Dopasuj szerokość do kontenera
-    const width = relationGraph.clientWidth || 1200;
-    root.render(
-      createElement(RelationGraph, {
-        width,
-        height: 600,
-        className: 'w-full',
-      })
-    );
-  }
-</script>
-
