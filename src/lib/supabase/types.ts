@@ -21,11 +21,29 @@ export type SystemClass =
 /**
  * @cybernetic Typ systemu sterowania źródła
  */
-export type ControlSystemType = 
+export type ControlSystemType =
   | 'cognitive'      // System poznawczy (nauka, fakty)
   | 'ideological'    // System ideologiczny (propaganda, doktryna)
   | 'ethical'        // System etyczny (normy moralne)
   | 'economic';      // System gospodarczy (biznes, zysk)
+
+/**
+ * @cybernetic Kod cywilizacyjny (Metacybernetyka 2015)
+ */
+export type CivilizationCode =
+  | 'latin'          // Cywilizacja łacińska (nauka, prawo)
+  | 'byzantine'      // Cywilizacja bizantyjska (religia, tradycja)
+  | 'turandot'       // Cywilizacja turandot (ideologia, totalitaryzm)
+  | 'mixed'          // Mieszana
+  | 'unknown';       // Nieznana
+
+/**
+ * @cybernetic Typ motywacji systemu (Metacybernetyka 2015)
+ */
+export type MotivationType =
+  | 'vital'          // Motywacje witalne (przeżycie biologiczne)
+  | 'informational'  // Motywacje informacyjne (poznanie)
+  | 'mixed';         // Mieszane
 
 /**
  * @cybernetic Typ relacji sterowniczej
@@ -52,6 +70,7 @@ export interface EnergyParams {
 /**
  * @cybernetic Tabela: cybernetic_objects
  * Reprezentuje obiekty elementarne z teorii poznania Kosseckiego
+ * ZAKTUALIZOWANO: Metacybernetyka 2015 - dodano v, a, c oraz P
  */
 export interface CyberneticObject {
   id: string;
@@ -59,7 +78,20 @@ export interface CyberneticObject {
   description?: string;
   system_class: SystemClass;
   control_system_type: ControlSystemType;
+
+  // LEGACY: Stare parametry energetyczne (do usunięcia w przyszłości)
   energy_params: EnergyParams;
+
+  // METACYBERNETYKA 2015: Parametry mocy systemowej
+  power_v: number;              // v - Moc jednostkowa [W]
+  quality_a: number;            // a - Jakość/sprawność (0-1)
+  mass_c: number;               // c - Ilość/masa
+  total_power_p: number;        // P = v × a × c - moc całkowita [W] (generated)
+
+  // METACYBERNETYKA 2015: Klasyfikacja cywilizacyjna
+  civilization_code: CivilizationCode;
+  motivation_type: MotivationType;
+
   created_at: string;
 }
 
@@ -139,8 +171,9 @@ export interface Database {
     Tables: {
       cybernetic_objects: {
         Row: CyberneticObject;
-        Insert: Omit<CyberneticObject, 'id' | 'created_at'>;
-        Update: Partial<Omit<CyberneticObject, 'id' | 'created_at'>>;
+        // total_power_p jest generated column - nie można jej ustawiać przy INSERT/UPDATE
+        Insert: Omit<CyberneticObject, 'id' | 'created_at' | 'total_power_p'>;
+        Update: Partial<Omit<CyberneticObject, 'id' | 'created_at' | 'total_power_p'>>;
       };
       correlations: {
         Row: Correlation;
@@ -170,6 +203,21 @@ export interface Database {
           target_id: string;
           relation_type: RelationType;
           depth: number;
+        };
+      };
+      v_power_ranking: {
+        Row: {
+          id: string;
+          name: string;
+          system_class: SystemClass;
+          power_v: number;
+          quality_a: number;
+          mass_c: number;
+          total_power_p: number;
+          civilization_code: CivilizationCode;
+          motivation_type: MotivationType;
+          power_rank_in_class: number;
+          power_rank_global: number;
         };
       };
     };

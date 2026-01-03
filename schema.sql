@@ -3,6 +3,7 @@
 
 -- 1. Tabela obiektów (Systemy Autonomiczne i Inne)
 -- Reprezentuje "obiekty elementarne" z teorii poznania Kosseckiego
+-- ZAKTUALIZOWANO: Metacybernetyka 2015 - dodano parametry v, a, c oraz P = v × a × c
 CREATE TABLE cybernetic_objects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
@@ -11,8 +12,19 @@ CREATE TABLE cybernetic_objects (
     system_class TEXT CHECK (system_class IN ('autonomous_system', 'heteronomous_system', 'environment', 'tool')),
     -- Dominujący system sterowania źródła
     control_system_type TEXT CHECK (control_system_type IN ('cognitive', 'ideological', 'ethical', 'economic')),
-    -- Parametry energetyczne (Moc jałowa, robocza, swobodna)
+    -- Parametry energetyczne (Moc jałowa, robocza, swobodna) - LEGACY
     energy_params JSONB DEFAULT '{"working_power": 0, "idle_power": 0, "available_power": 0}',
+
+    -- METACYBERNETYKA 2015: Parametry mocy systemowej
+    power_v FLOAT8 DEFAULT 1.0 NOT NULL CHECK (power_v >= 0), -- Moc jednostkowa [W]
+    quality_a FLOAT8 DEFAULT 1.0 NOT NULL CHECK (quality_a >= 0 AND quality_a <= 1), -- Jakość/sprawność
+    mass_c FLOAT8 DEFAULT 1.0 NOT NULL CHECK (mass_c >= 0), -- Ilość/masa
+    total_power_p FLOAT8 GENERATED ALWAYS AS (power_v * quality_a * mass_c) STORED, -- P = v × a × c
+
+    -- METACYBERNETYKA 2015: Klasyfikacja cywilizacyjna
+    civilization_code TEXT DEFAULT 'unknown' CHECK (civilization_code IN ('latin', 'byzantine', 'turandot', 'mixed', 'unknown')),
+    motivation_type TEXT DEFAULT 'informational' CHECK (motivation_type IN ('vital', 'informational', 'mixed')),
+
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

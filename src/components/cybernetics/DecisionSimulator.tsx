@@ -313,7 +313,7 @@ export function DecisionSimulator({ objectId, objectName }: DecisionSimulatorPro
             <h3 className="text-sm font-bold text-terminal-muted uppercase mb-2">
               [METADATA]
             </h3>
-            <div className="grid grid-cols-3 gap-4 text-xs text-terminal-muted">
+            <div className="grid grid-cols-4 gap-4 text-xs text-terminal-muted">
               <div>
                 Ścieżek: {simulation.simulation_metadata.total_paths_analyzed}
               </div>
@@ -323,7 +323,23 @@ export function DecisionSimulator({ objectId, objectName }: DecisionSimulatorPro
               <div>
                 Czas: {simulation.simulation_metadata.computation_time_ms.toFixed(0)}ms
               </div>
+              <div>
+                Engine:{' '}
+                <span className={
+                  (simulation as any)._metadata?.engine === 'wasm'
+                    ? 'text-terminal-accent font-bold'
+                    : 'text-terminal-text'
+                }>
+                  {(simulation as any)._metadata?.engine === 'wasm' ? '🦀 RUST/WASM' : '📘 TypeScript'}
+                </span>
+              </div>
             </div>
+            {/* Reason dla engine */}
+            {(simulation as any)._metadata?.reason && (
+              <div className="mt-2 text-xs text-terminal-muted italic">
+                {(simulation as any)._metadata.reason}
+              </div>
+            )}
           </section>
         </>
       )}
