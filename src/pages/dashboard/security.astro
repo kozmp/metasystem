@@ -1,0 +1,231 @@
+---
+/**
+ * @fileoverview Dashboard Security - Przegląd zdarzeń bezpieczeństwa
+ * @cybernetic Efektor - wizualizacja decyzji Homeostatu Security Layer
+ * 
+ * Zgodnie z Metacybernetyką 2015:
+ * Transparentność systemu - użytkownik musi widzieć co AI próbowało zrobić.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase/client';
+
+// Pobierz ostatnie zdarzenia bezpieczeństwa
+const { data: securityEvents, error: eventsError } = await supabase
+  .from('system_alerts')
+  .select('*')
+  .not('operation_type', 'is', null)
+  .order('created_at', { ascending: false })
+  .limit(50);
+
+// Pobierz statystyki (ostatnie 7 dni)
+const dateFrom = new Date();
+dateFrom.setDate(dateFrom.getDate() - 7);
+
+const { data: statsData, error: statsError } = await supabase
+  .from('system_alerts')
+  .select('blocked_by_security, user_confirmed, severity')
+  .not('operation_type', 'is', null)
+  .gte('created_at', dateFrom.toISOString());
+
+// Oblicz statystyki
+const stats = statsData ? {
+  total: statsData.length,
+  blocked: statsData.filter(e => e.blocked_by_security).length,
+  confirmed: statsData.filter(e => e.user_confirmed === true).length,
+  rejected: statsData.filter(e => e.user_confirmed === false).length,
+  critical: statsData.filter(e => e.severity >= 0.8).length,
+} : null;
+
+// Mapowanie severity (float) na label
+function getSeverityLabel(severity: number): string {
+  if (severity >= 0.8) return 'CRITICAL';
+  if (severity >= 0.6) return 'HIGH';
+  if (severity >= 0.4) return 'MEDIUM';
+  return 'LOW';
+}
+
+// Mapowanie severity na kolor
+function getSeverityColor(severity: number): string {
+  if (severity >= 0.8) return 'bg-red-100 text-red-800 border-red-300';
+  if (severity >= 0.6) return 'bg-orange-100 text-orange-800 border-orange-300';
+  if (severity >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+  return 'bg-blue-100 text-blue-800 border-blue-300';
+}
+
+// Mapowanie decyzji na emoji
+function getDecisionEmoji(event: any): string {
+  if (event.blocked_by_security) return '🚫';
+  if (event.user_confirmed === true) return '✓';
+  if (event.user_confirmed === false) return '✗';
+  return '✓';
+}
+
+// Mapowanie decyzji na label
+function getDecisionLabel(event: any): string {
+  if (event.blocked_by_security) return 'ZABLOKOWANO';
+  if (event.user_confirmed === true) return 'POTWIERDZONO';
+  if (event.user_confirmed === false) return 'ODRZUCONO';
+  return 'DOZWOLONO';
+}
+---
+
+<Layout title="Security Dashboard - KMS">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          🛡️ Security Dashboard
+        </h1>
+        <p class="mt-2 text-gray-600">
+          Homeostat Security Layer - przegląd zdarzeń bezpieczeństwa systemu
+        </p>
+      </div>
+
+      <!-- Statystyki (ostatnie 7 dni) -->
+      {stats && (
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+            <div class="text-2xl font-bold text-gray-900">{stats.total}</div>
+            <div class="text-sm text-gray-600">Wszystkie zdarzenia</div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+            <div class="text-2xl font-bold text-red-600">{stats.blocked}</div>
+            <div class="text-sm text-gray-600">Zablokowane</div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+            <div class="text-2xl font-bold text-green-600">{stats.confirmed}</div>
+            <div class="text-sm text-gray-600">Potwierdzone</div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
+            <div class="text-2xl font-bold text-orange-600">{stats.rejected}</div>
+            <div class="text-sm text-gray-600">Odrzucone</div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+            <div class="text-2xl font-bold text-purple-600">{stats.critical}</div>
+            <div class="text-sm text-gray-600">Krytyczne</div>
+          </div>
+        </div>
+      )}
+
+      <!-- Błędy -->
+      {eventsError && (
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+          <p class="text-red-800">
+            <strong>Błąd:</strong> {eventsError.message}
+          </p>
+        </div>
+      )}
+
+      <!-- Lista zdarzeń -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-900">
+            Ostatnie zdarzenia bezpieczeństwa (50)
+          </h2>
+        </div>
+
+        {securityEvents && securityEvents.length > 0 ? (
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Data
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Operacja
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Decyzja
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Severity
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Opis
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Target
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                {securityEvents.map((event: any) => (
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(event.created_at).toLocaleString('pl-PL')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {event.operation_type}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        event.blocked_by_security 
+                          ? 'bg-red-100 text-red-800' 
+                          : event.user_confirmed === true
+                          ? 'bg-green-100 text-green-800'
+                          : event.user_confirmed === false
+                          ? 'bg-orange-100 text-orange-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {getDecisionEmoji(event)} {getDecisionLabel(event)}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getSeverityColor(event.severity)}`}>
+                        {getSeverityLabel(event.severity)}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900 max-w-md truncate">
+                      {event.description}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                      {event.target || '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div class="px-6 py-12 text-center text-gray-500">
+            <p class="text-lg">Brak zdarzeń bezpieczeństwa</p>
+            <p class="text-sm mt-2">System nie wykrył żadnych zagrożeń w ostatnim czasie.</p>
+          </div>
+        )}
+      </div>
+
+      <!-- Cybernetyczna nota -->
+      <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-blue-900 mb-2">
+          💡 Zgodnie z Metacybernetyką 2015
+        </h3>
+        <p class="text-blue-800 text-sm leading-relaxed">
+          <strong>Homeostat Security Layer</strong> działa jako <strong>sprzężenie zwrotne ujemne</strong> - 
+          stabilizuje system przez blokowanie destrukcyjnych operacji AI. 
+          Każda decyzja jest logowana dla transparentności i analizy wzorców zagrożeń.
+          Człowiek ma ostateczną decyzję w systemie poznawczym (zwiększenie "mocy swobodnej" P_user).
+        </p>
+      </div>
+
+      <!-- Nawigacja -->
+      <div class="mt-8 flex gap-4">
+        <a 
+          href="/dashboard" 
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          ← Powrót do Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+

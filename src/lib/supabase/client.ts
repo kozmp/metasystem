@@ -18,17 +18,20 @@ import type { Database } from './types';
 const supabaseUrl = 
   typeof process !== 'undefined' && process.env.SUPABASE_URL 
     ? process.env.SUPABASE_URL
-    : (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_SUPABASE_URL || import.meta.env?.SUPABASE_URL)) || undefined;
+    : (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_SUPABASE_URL || import.meta.env?.SUPABASE_URL)) || '';
 
 const supabaseKey = 
   typeof process !== 'undefined' && process.env.SUPABASE_KEY
     ? process.env.SUPABASE_KEY
-    : (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_SUPABASE_KEY || import.meta.env?.SUPABASE_KEY)) || undefined;
+    : (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_SUPABASE_KEY || import.meta.env?.SUPABASE_KEY)) || '';
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    'Brak konfiguracji Supabase. Ustaw SUPABASE_URL i SUPABASE_KEY w pliku .env'
-  );
+// Funkcja walidująca konfigurację (wywołuj przed użyciem klienta)
+function validateSupabaseConfig() {
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      'Brak konfiguracji Supabase. Ustaw SUPABASE_URL i SUPABASE_KEY w pliku .env'
+    );
+  }
 }
 
 // ============================================================================
@@ -43,15 +46,21 @@ if (!supabaseUrl || !supabaseKey) {
  * - Korelator → przechowuje w pamięci (Supabase)
  * - Homeostat → weryfikuje rzetelność
  * - Efektor → prezentuje wyniki
+ * 
+ * UWAGA: Używaj validateSupabaseConfig() przed pierwszym użyciem w Node.js
  */
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: false, // Server-side, nie potrzebujemy sesji
-  },
-  db: {
-    schema: 'public',
-  },
-});
+export const supabase = createClient<Database>(
+  supabaseUrl || 'https://placeholder.supabase.co', // Placeholder aby nie rzucić błędu przy imporcie
+  supabaseKey || 'placeholder-key',
+  {
+    auth: {
+      persistSession: false, // Server-side, nie potrzebujemy sesji
+    },
+    db: {
+      schema: 'public',
+    },
+  }
+);
 
 /**
  * @cybernetic Test połączenia z bazą danych
@@ -59,6 +68,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
  */
 export async function testSupabaseConnection(): Promise<boolean> {
   try {
+    validateSupabaseConfig(); // Waliduj przed użyciem
+    
     console.log('[SUPABASE] Testuję połączenie z bazą danych...');
     
     const { data, error } = await supabase
@@ -86,6 +97,8 @@ export async function checkDatabaseSchema(): Promise<{
   ready: boolean;
   missingTables: string[];
 }> {
+  validateSupabaseConfig(); // Waliduj przed użyciem
+  
   const requiredTables = [
     'cybernetic_objects',
     'correlations',
@@ -117,6 +130,8 @@ export async function checkDatabaseSchema(): Promise<{
     missingTables,
   };
 }
+
+export { validateSupabaseConfig };
 
 export default supabase;
 

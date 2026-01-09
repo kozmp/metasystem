@@ -11,11 +11,20 @@ interface ReceptorInputFormProps {
   onProcessComplete?: () => void;
 }
 
+// Dostępne modele AI
+const AVAILABLE_MODELS = [
+  { id: 'anthropic/claude-3.5-sonnet', name: '🤖 Claude 3.5 Sonnet (OpenRouter)', provider: 'openrouter' },
+  { id: 'openai/gpt-4o', name: '🧠 GPT-4o (OpenRouter)', provider: 'openrouter' },
+  { id: 'google/gemini-flash-1.5', name: '⚡ Gemini Flash 1.5 (OpenRouter)', provider: 'openrouter' },
+  { id: 'gemini-direct', name: '✨ Gemini 2.5 Flash (Direct API)', provider: 'gemini' },
+];
+
 export function ReceptorInputForm({ onProcessComplete }: ReceptorInputFormProps) {
   const [state, setState] = useState<ReceptorInputState>({
     text: '',
     is_processing: false,
     result: undefined,
+    model: 'anthropic/claude-3.5-sonnet', // Domyślny model
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,7 +40,10 @@ export function ReceptorInputForm({ onProcessComplete }: ReceptorInputFormProps)
       const response = await fetch('/api/receptor/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: state.text }),
+        body: JSON.stringify({ 
+          text: state.text,
+          model: state.model  // Dodaj wybrany model
+        }),
       });
 
       const result = await response.json();
@@ -80,6 +92,31 @@ export function ReceptorInputForm({ onProcessComplete }: ReceptorInputFormProps)
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Dropdown wyboru modelu */}
+        <div>
+          <label htmlFor="model-select" className="block text-sm text-terminal-accent mb-2 uppercase tracking-wider">
+            Model AI:
+          </label>
+          <select
+            id="model-select"
+            value={state.model}
+            onChange={(e) => setState(prev => ({ ...prev, model: e.target.value }))}
+            disabled={state.is_processing}
+            className="input-terminal w-full"
+          >
+            {AVAILABLE_MODELS.map(model => (
+              <option key={model.id} value={model.id}>
+                {model.name}
+              </option>
+            ))}
+          </select>
+          <div className="mt-1 text-xs text-terminal-muted">
+            {state.model === 'gemini-direct' 
+              ? '✨ Direct Google API - Wymaga GEMINI_API_KEY'
+              : '🔄 OpenRouter API - Wymaga OPENROUTER_API_KEY'}
+          </div>
+        </div>
+
         <div>
           <label htmlFor="signal-input" className="block text-sm text-terminal-accent mb-2 uppercase tracking-wider">
             Sygnał wejściowy:

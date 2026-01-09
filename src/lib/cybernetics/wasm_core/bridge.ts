@@ -128,10 +128,57 @@ export async function isWasmAvailable(): Promise<boolean> {
   }
 }
 
+// ============================================================================
+// NOWA FUNKCJA: calculate_total_power (GEMINI -> RUST)
+// ============================================================================
+
+/**
+ * @cybernetic Oblicza moc całkowitą P = v × a × c w Rust
+ * 
+ * @param power_v - Moc jednostkowa [W]
+ * @param quality_a - Jakość/sprawność (0-1)
+ * @param mass_c - Ilość/masa
+ * @returns Moc całkowita P [W]
+ * 
+ * INTEGRACJA: Gemini -> Bridge -> Rust -> Supabase
+ */
+export async function calculateTotalPowerWasm(
+  power_v: number,
+  quality_a: number,
+  mass_c: number
+): Promise<number> {
+  try {
+    // Spróbuj użyć Wasm
+    await loadWasmModule();
+
+    if (!wasmModule || !(wasmModule as any).wasm_calculate_power) {
+      throw new Error('Wasm calculate_power not available');
+    }
+
+    // Wywołaj Rust
+    const startTime = performance.now();
+    const result = (wasmModule as any).wasm_calculate_power(power_v, quality_a, mass_c);
+    const endTime = performance.now();
+
+    console.log(`[WASM] Power calculation completed in ${(endTime - startTime).toFixed(2)}ms`);
+    console.log(`[WASM] P = ${power_v} × ${quality_a} × ${mass_c} = ${result.toFixed(2)} W`);
+
+    return result;
+  } catch (error) {
+    console.warn('[WASM] Fallback to TypeScript for power calculation due to error:', error);
+
+    // Fallback: proste mnożenie w TS
+    const P = power_v * quality_a * mass_c;
+    console.log(`[TS FALLBACK] P = ${P.toFixed(2)} W`);
+    return P;
+  }
+}
+
 /**
  * @cybernetic Export główny (kompatybilny z istniejącym API)
  */
 export default {
   findInfluencePathsWasm,
   isWasmAvailable,
+  calculateTotalPowerWasm,
 };

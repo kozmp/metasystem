@@ -542,6 +542,15 @@ pub fn wasm_find_influence_paths(
     Ok(result_json)
 }
 
+/// @cybernetic WASM Entry Point - Obliczanie mocy P = v × a × c
+///
+/// Funkcja dla integracji Gemini -> Rust -> Supabase
+/// METACYBERNETYKA 2015: Moc systemowa jako ILOCZYN, nie suma!
+#[wasm_bindgen]
+pub fn wasm_calculate_power(power_v: f64, quality_a: f64, mass_c: f64) -> f64 {
+    calculate_total_power(power_v, quality_a, mass_c)
+}
+
 // ============================================================================
 // TESTY JEDNOSTKOWE
 // ============================================================================
