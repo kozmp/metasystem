@@ -103,6 +103,7 @@ function mapRelationType(
  */
 export async function processAndStoreSignal(
   text: string,
+  model?: string, // Wybrany model AI (opcjonalnie)
   sourceMetadata?: {
     source_url?: string;
     source_title?: string;
@@ -121,13 +122,58 @@ export async function processAndStoreSignal(
   try {
     console.log('[KORELATOR] Rozpoczynam przetwarzanie sygnału...');
     console.log(`[KORELATOR] Długość tekstu: ${text.length} znaków`);
+    console.log(`[KORELATOR] Model: ${model || 'default (OpenRouter)'}`);
     
     // ========================================================================
     // KROK 1: RECEPTOR - Transformacja sygnału
     // ========================================================================
     
-    console.log('[KORELATOR] Wywołuję Receptor...');
+    // Jeśli wybrano Gemini Direct, użyj dedykowanej funkcji
+    if (model === 'gemini-direct') {
+      console.log('[KORELATOR] 🔄 Wykryto Gemini Direct - używam dedykowanego API...');
+      
+      // Dynamiczny import żeby nie ładować Gemini jeśli nie jest potrzebny
+      const { analyzeText } = await import('../receptor/gemini_service');
+      
+      try {
+        const geminiResult = await analyzeText(text, sourceMetadata?.source_url);
+        
+        console.log('[KORELATOR] ✓ Gemini przeanalizował tekst');
+        console.log(`[KORELATOR]   Quality: ${geminiResult.quality_a.toFixed(2)}`);
+        console.log(`[KORELATOR]   Distortion Z: ${geminiResult.distortion_z.toFixed(2)}`);
+        console.log(`[KORELATOR]   Control Type: ${geminiResult.control_system_type}`);
+        
+        // TODO: Gemini zwraca inny format niż Receptor
+        // Potrzebna konwersja wyniku Gemini na format CyberneticInput
+        // Na razie zwróć błąd z informacją
+        return {
+          success: false,
+          objects_created: 0,
+          relations_created: 0,
+          error: '⚠️ Gemini Direct: Integracja w toku. Wynik analizy gotowy, ale wymaga konwersji na format systemu. Użyj innego modelu.',
+        };
+        
+      } catch (geminiError) {
+        console.error('[KORELATOR] ✗ Błąd Gemini:', geminiError);
+        return {
+          success: false,
+          objects_created: 0,
+          relations_created: 0,
+          error: `Błąd Gemini Direct: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`,
+        };
+      }
+    }
+    
+    // OpenRouter (domyślnie)
+    console.log('[KORELATOR] Wywołuję Receptor (OpenRouter)...');
     const extractor = getReceptorExtractor();
+    
+    // Opcjonalnie: ustaw model w extractorze jeśli podany
+    if (model && model !== 'gemini-direct') {
+      // Extractor automatycznie użyje modelu z env lub tego co przekażemy
+      // Na razie ignorujemy, bo extractor używa zmiennej środowiskowej
+    }
+    
     const receptorResult = await extractor.transformSignal(text);
     
     // Sprawdź czy Receptor odrzucił sygnał

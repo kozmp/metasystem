@@ -72,6 +72,7 @@ export interface SystemStats {
 export interface ReceptorInputState {
   text: string;
   is_processing: boolean;
+  model?: string; // Wybrany model AI
   result?: {
     success: boolean;
     objects_created: number;

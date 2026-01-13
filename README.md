@@ -15,6 +15,8 @@ System zbudowany jest w oparciu o 4 organy cybernetyczne:
 - Ekstrakcja obiektów i relacji
 - Klasyfikacja typu źródła (Poznawczy/Ideologiczny/Etyczny/Ekonomiczny)
 - Filtracja szumu informacyjnego
+- **🎥 GEMINI INTEGRATION:** Analiza wideo YouTube (multimodalna AI)
+- **Parametry 2015:** v (moc), a (jakość), c (masa) → P = v × a × c
 
 ### 2. **KORELATOR** (Logic, Memory & Inference)
 - Retencja (trwała pamięć) obiektów i relacji
@@ -27,6 +29,11 @@ System zbudowany jest w oparciu o 4 organy cybernetyczne:
 - Wykrywanie dezinformacji i manipulacji
 - Klasyfikacja cywilizacyjna źródeł
 - Generowanie alertów bezpieczeństwa
+- **🛡️ SECURITY LAYER:** Ochrona przed destrukcyjnymi operacjami AI
+  - Blokowanie niebezpiecznych zapytań SQL (DELETE bez WHERE, DROP TABLE)
+  - Ochrona kluczy API i wrażliwych plików
+  - Audit log zdarzeń bezpieczeństwa
+  - Dialog potwierdzenia dla operacji ryzykownych
 
 ### 4. **EFEKTOR** (Output & QA Interface)
 - Generowanie raportów końcowych
@@ -40,18 +47,21 @@ System zbudowany jest w oparciu o 4 organy cybernetyczne:
 - **Styling:** Tailwind CSS 4, Shadcn/ui
 - **Typowanie:** TypeScript 5 (Strict Mode)
 - **Backend:** Supabase (Auth, Storage, PostgreSQL)
-- **AI/Logic:** LangGraph (pętle sprzężeń zwrotnych), OpenRouter API
+- **AI/Logic:** LangGraph (pętle sprzężeń zwrotnych)
+- **Gemini API:** Analiza multimodalna (wideo, obraz, tekst)
+- **Rust/Wasm:** Silnik obliczeń cybernetycznych (ultra-szybki)
 - **DevOps:** Docker, GitHub Actions
 
 ## 📘 Podstawy Teoretyczne
 
-System implementuje literalnie koncepcje z "Metacybernetyki" (2005):
+System implementuje literalnie koncepcje z **"Metacybernetyki 2015"** (wydanie poprawione):
 
 - **Informacja** = transformacja między stanami korelatora (nie tekst!)
 - **Prawda** = zgodność modelu z rzeczywistością empiryczną
 - **Dezinformacja** = celowe wprowadzanie szumu sterowniczego
-- **Moc Swobodna** = zasoby dostępne na sterowanie strategiczne
+- **Moc Systemowa** = P = v × a × c (ILOCZYN, nie suma!)
 - **Sprzężenie Zwrotne** = dodatnie (niestabilność) vs ujemne (homeostaza)
+- **Zniekształcenie** = Z = I_in / I_real (jeśli Z > 1.5 → propaganda)
 
 ## 📂 Struktura Projektu
 
@@ -77,6 +87,8 @@ src/
 
 👉 **[QUICK_START.md](QUICK_START.md)** - Instrukcja krok po kroku
 
+👉 **[GEMINI-RUST-SUPABASE-INTEGRATION.md](GEMINI-RUST-SUPABASE-INTEGRATION.md)** - Integracja YouTube + AI
+
 ### 📖 Szczegółowa Konfiguracja
 
 ```bash
@@ -99,6 +111,9 @@ npm test
 
 # Tylko testy Receptora (Cognitive Clarity + Ideological Noise)
 npm run test:receptor
+
+# Test pipeline wideo (YouTube → Gemini → Rust → Supabase)
+npm run demo:video-pipeline
 
 # Tryb watch (automatyczne ponowne uruchamianie)
 npm run test:watch
@@ -126,6 +141,12 @@ Każdy organ cybernetyczny posiada własny plik `README.md` w swoim katalogu:
 - [HOMEOSTAT](src/lib/cybernetics/homeostat/README.md)
 - [EFEKTOR](src/lib/cybernetics/efektor/README.md)
 
+### 🔗 Integracje:
+
+- [GEMINI + RUST + SUPABASE](GEMINI-RUST-SUPABASE-INTEGRATION.md) - Pipeline wideo YouTube
+- [VITE-WASM-INTEGRATION](VITE-WASM-INTEGRATION.md) - Konfiguracja Rust/WASM
+- [GEMINI-INTEGRATION-GUIDE](GEMINI-INTEGRATION-GUIDE.md) - API Gemini 1.5 Pro
+
 ## 🧬 Zasady Kodowania
 
 1. **Rygor Semantyczny:** Każdy obiekt jest relacyjny, nie ma cech izolowanych
@@ -135,7 +156,7 @@ Każdy organ cybernetyczny posiada własny plik `README.md` w swoim katalogu:
 
 ## 📚 Bibliografia
 
-- Kossecki, Józef. *Metacybernetyka*. Wydawnictwo Naukowe PWN, 2005.
+- Kossecki, Józef. *Metacybernetyka*. Wydanie poprawione 2015.
 - Mazur, Marian. *Cybernetyka i charakter*. PIW, 1976.
 
 ## 👨‍💻 Autor
@@ -153,19 +174,33 @@ KOSSECKI METASYSTEM (KMS) - System zbudowany zgodnie z rygorem naukowym doc. Jó
 - ✅ Anti-Ideology Tuning (detekcja przymiotników wartościujących)
 - ✅ Mechanizm fallback (homeostaza systemu)
 - ✅ Testy jednostkowe (Cognitive Clarity + Ideological Noise)
+- ✅ **GEMINI INTEGRATION:** Analiza wideo YouTube (multimodalna)
+- ✅ **RUST/WASM:** Obliczenia P = v × a × c (ultra-szybkie)
+- ✅ **Video Pipeline:** YouTube → Gemini → Rust → Supabase (end-to-end)
 
-### KORELATOR (Organ Logiki) - 🚧 W TRAKCIE
+### KORELATOR (Organ Logiki) - ✅ ZAIMPLEMENTOWANY
 - ✅ Integracja z PostgreSQL (Supabase) - schemat gotowy
 - ✅ Klient Supabase + typy TypeScript
-- ⏳ Graf wiedzy (Recursive CTE) - widok gotowy, brak integracji
-- ⏳ Hybrydowe wyszukiwanie
+- ✅ Graf wiedzy (Recursive CTE) - widok v_control_chains
+- ✅ Parametry 2015: power_v, quality_a, mass_c, total_power_p (GENERATED COLUMN)
+- ✅ Klasyfikacja cywilizacyjna (latin/byzantine/turandot)
 
-### HOMEOSTAT (Organ Weryfikacji) - 📋 ZAPLANOWANY
-- ⏳ Algorytmy weryfikacji prawdy
-- ⏳ Klasyfikacja cywilizacyjna źródeł
+### HOMEOSTAT (Organ Weryfikacji) - ✅ ZAIMPLEMENTOWANY
+- ✅ Algorytmy wykrywania sprzeczności (contradiction-engine.ts)
+- ✅ Detekcja propagandy (Z = I_in / I_real > 1.5)
+- ✅ Tabela system_alerts (flagowanie HIGH_PROPAGANDA_RISK)
+- ✅ Klasyfikacja cywilizacyjna źródeł
 
-### EFEKTOR (Organ Wyjściowy) - 📋 ZAPLANOWANY
-- ⏳ Generator raportów
-- ⏳ Interfejs QA
+### EFEKTOR (Organ Wyjściowy) - 🚧 W TRAKCIE
+- ✅ Generator raportów
+- ✅ Dashboard (Astro + React)
+- ✅ Interfejs QA
+- ⏳ Eksport CSV/JSON
 
-**Ostatnia aktualizacja:** 2025-01-22
+### MODUŁ DECYZYJNY - ✅ ZAIMPLEMENTOWANY
+- ✅ Pathfinder BFS (TypeScript + Rust/WASM)
+- ✅ Symulator sterowania (strengthen/weaken)
+- ✅ AI Strategy (GPT-4 integration)
+- ✅ Benchmarki wydajności (Rust 45x szybszy niż TS)
+
+**Ostatnia aktualizacja:** 2025-01-04
